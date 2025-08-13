@@ -9,7 +9,11 @@ class ProductModel extends Model
     protected $table            = 'products';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $allowedFields    = ['nama_produk', 'deskripsi', 'harga', 'stok', 'gambar_produk'];
+    protected $returnType       = 'array'; // Added for consistency
+    protected $useSoftDeletes   = false; // Added for clarity
+    
+    // Updated allowedFields to include toko_id
+    protected $allowedFields    = ['toko_id', 'nama_produk', 'deskripsi', 'harga', 'stok', 'gambar_produk'];
 
     // Dates
     protected $useTimestamps = true;

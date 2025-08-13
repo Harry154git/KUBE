@@ -61,6 +61,11 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/profile"><i class="bi bi-person-lines-fill me-2"></i>Profil</a></li>
                             <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear-fill me-2"></i>Pengaturan</a></li>
+                            <?php if(session()->get('is_seller')): ?>
+                                <li><a class="dropdown-item" href="<?= route_to('seller.dashboard') ?>"><i class="bi bi-shop me-2"></i>Toko Saya</a></li>
+                            <?php else: ?>
+                                <li><a class="dropdown-item" href="<?= route_to('seller.activate') ?>"><i class="bi bi-shop-window me-2"></i>Buka Toko</a></li>
+                            <?php endif; ?>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                         </ul>

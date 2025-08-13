@@ -8,18 +8,38 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
-            'nama_lengkap' => 'Admin User',
-            'email'    => 'admin@example.com',
-            'password' => password_hash('123456', PASSWORD_DEFAULT), // Jangan gunakan password lemah di produksi!
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+        // Data pengguna contoh
+        $users = [
+            [
+                'nama_lengkap' => 'Budi Sanjaya',
+                'email'        => 'budi.sanjaya@example.com',
+                'password'     => password_hash('password123', PASSWORD_DEFAULT),
+                'is_seller'    => 1, // Penjual
+                'toko_id'      => 1, // Akan dibuat di TokoSeeder
+                'created_at'   => date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
+            ],
+            [
+                'nama_lengkap' => 'Citra Lestari',
+                'email'        => 'citra.lestari@example.com',
+                'password'     => password_hash('password123', PASSWORD_DEFAULT),
+                'is_seller'    => 1, // Penjual
+                'toko_id'      => 2, // Akan dibuat di TokoSeeder
+                'created_at'   => date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
+            ],
+            [
+                'nama_lengkap' => 'Andi Pratama',
+                'email'        => 'andi.pratama@example.com',
+                'password'     => password_hash('password123', PASSWORD_DEFAULT),
+                'is_seller'    => 0, // Pembeli biasa
+                'toko_id'      => null,
+                'created_at'   => date('Y-m-d H:i:s'),
+                'updated_at'   => date('Y-m-d H:i:s'),
+            ],
         ];
 
-        // Simple Queries
-        // $this->db->query('INSERT INTO users (nama_lengkap, email, password, created_at, updated_at) VALUES(:nama_lengkap:, :email:, :password:, :created_at:, :updated_at:)', $data);
-
-        // Using Query Builder
-        $this->db->table('users')->insert($data);
+        // Menggunakan Query Builder untuk insert data
+        $this->db->table('users')->insertBatch($users);
     }
 }

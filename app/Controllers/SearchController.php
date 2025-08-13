@@ -38,17 +38,4 @@ class SearchController extends BaseController
         // Menampilkan view hasil pencarian dengan data yang relevan
         return view('search_view', $data);
     }
-
-    public function detail($id = null)
-    {
-        $model = new ProductModel();
-        $product = $model->find($id);
-
-        if (!$product) {
-            // Jika produk tidak ditemukan, tampilkan error 404
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Produk tidak ditemukan: ' . $id);
-        }
-
-        return view('product_detail', ['product' => $product]);
-    }
 }

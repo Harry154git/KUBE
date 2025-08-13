@@ -15,6 +15,14 @@ class CreateProductsTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
+            // --- KOLOM BARU UNTUK RELASI TOKO ---
+            'toko_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+                'null'       => false, // Setiap produk harus punya toko
+            ],
+            // --- AKHIR KOLOM BARU ---
             'nama_produk' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '150',
@@ -32,7 +40,7 @@ class CreateProductsTable extends Migration
                 'constraint' => 5,
                 'default'    => 0,
             ],
-             'gambar_produk' => [
+            'gambar_produk' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
                 'null'       => true,
@@ -47,6 +55,9 @@ class CreateProductsTable extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);
+        // Tambahkan foreign key ke tabel 'toko'
+        // Pastikan migrasi untuk tabel 'toko' sudah berjalan sebelumnya
+        $this->forge->addForeignKey('toko_id', 'toko', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('products');
     }
 

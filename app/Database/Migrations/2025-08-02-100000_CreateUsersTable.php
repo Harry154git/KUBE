@@ -28,6 +28,21 @@ class CreateUsersTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
             ],
+            // --- KOLOM BARU UNTUK PENJUAL ---
+            'is_seller' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'null'       => false,
+                'default'    => 0,
+                'comment'    => '0: Pembeli, 1: Penjual',
+            ],
+            'toko_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+                'null'       => true, // Boleh NULL karena pengguna tidak langsung punya toko
+            ],
+            // --- AKHIR KOLOM BARU ---
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
