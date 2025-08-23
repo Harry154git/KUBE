@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateTokoTable extends Migration
+class CreateAddressesTable extends Migration
 {
     public function up()
     {
@@ -20,24 +20,38 @@ class CreateTokoTable extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'nama_toko' => [
+            'label' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
+                'comment'    => 'Contoh: Rumah, Kantor',
             ],
-            'deskripsi_toko' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'alamat_toko' => [
+            'recipient_name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
-                'null'       => true,
             ],
-            'rekening_bank' => [
+            'phone_number' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
+            ],
+            'address' => [
+                'type' => 'TEXT',
+            ],
+            'city' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
-                'null'       => true,
-                'comment'    => 'Contoh: BCA 123456789 a/n John Doe',
+            ],
+            'province' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+            ],
+            'postal_code' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '10',
+            ],
+            'is_primary' => [
+                'type'       => 'BOOLEAN',
+                'default'    => false,
+                'comment'    => 'Menandai alamat utama',
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -50,11 +64,11 @@ class CreateTokoTable extends Migration
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('toko');
+        $this->forge->createTable('addresses');
     }
 
     public function down()
     {
-        $this->forge->dropTable('toko');
+        $this->forge->dropTable('addresses');
     }
 }

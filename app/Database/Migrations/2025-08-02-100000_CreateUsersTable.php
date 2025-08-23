@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'nama_lengkap' => [
+            'full_name' => [ 
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
             ],
@@ -28,21 +28,19 @@ class CreateUsersTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
             ],
-            // --- KOLOM BARU UNTUK PENJUAL ---
             'is_seller' => [
                 'type'       => 'TINYINT',
                 'constraint' => 1,
                 'null'       => false,
                 'default'    => 0,
-                'comment'    => '0: Pembeli, 1: Penjual',
+                'comment'    => '0: Customer, 1: Seller', 
             ],
-            'toko_id' => [
+            'store_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
-                'null'       => true, // Boleh NULL karena pengguna tidak langsung punya toko
+                'null'       => true,
             ],
-            // --- AKHIR KOLOM BARU ---
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

@@ -14,7 +14,7 @@
         button { width: 100%; padding: 0.7rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
         button:hover { background-color: #0056b3; }
         .error { background-color: #f8d7da; color: #721c24; padding: 0.7rem; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 1rem; text-align: center;}
-        /* Style untuk link register */
+        /* Style for register link */
         .register-link { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; }
         .register-link a { color: #007bff; text-decoration: none; }
         .register-link a:hover { text-decoration: underline; }
@@ -28,7 +28,7 @@
         <?php endif; ?>
         
         <?php if (session()->getFlashdata('success')): ?>
-            <!-- Menambahkan notifikasi sukses dari registrasi -->
+            <!-- Adding success notification from registration -->
             <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 0.7rem; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 1rem; text-align: center;">
                 <?= session()->getFlashdata('success') ?>
             </div>
@@ -47,9 +47,9 @@
             <button type="submit">Login</button>
         </form>
 
-        <!-- LINK KE REGISTER DITAMBAHKAN DI SINI -->
+        <!-- ADDED LINK TO REGISTER HERE -->
         <div class="register-link">
-            <p>Belum punya akun? <a href="/register">Register di sini</a></p>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
     </div>
 </body>

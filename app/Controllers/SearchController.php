@@ -8,34 +8,33 @@ use App\Models\ProductModel;
 class SearchController extends BaseController
 {
     /**
-    * Muat helper yang dibutuhkan di sini.
-    */
+     * Load required helpers here.
+     */
     public function __construct()
     {
-        // TAMBAHKAN BARIS INI
         helper(['form', 'url']); 
     }
 
     /**
-    * Menangani logika pencarian produk.
-    */
+     * Handles product search logic.
+     */
     public function search()
     {
-        $keyword = $this->request->getGet('q'); // Mengambil keyword dari URL (?q=...)
+        $keyword = $this->request->getGet('q'); // Get keyword from URL (?q=...)
         $model = new ProductModel();
         $data = [
             'keyword' => $keyword,
-            'products' => [] // Default products adalah array kosong
+            'products' => [] // Default products is an empty array
         ];
 
         if ($keyword) {
-            // Jika ada keyword, cari produk berdasarkan nama atau deskripsi
-            $data['products'] = $model->like('nama_produk', $keyword)
-                                      ->orLike('deskripsi', $keyword)
-                                      ->findAll();
+            // If there's a keyword, search products by name or description
+            $data['products'] = $model->like('product_name', $keyword) // Mengubah 'nama_produk'
+                                     ->orLike('description', $keyword) // Mengubah 'deskripsi'
+                                     ->findAll();
         }
 
-        // Menampilkan view hasil pencarian dengan data yang relevan
+        // Display the search results view with relevant data
         return view('search_view', $data);
     }
 }

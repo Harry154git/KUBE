@@ -4,9 +4,12 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\CartModel;
+use CodeIgniter\API\ResponseTrait; // Use this for API responses
 
 class CartController extends BaseController
 {
+    use ResponseTrait; // Trait to easily send JSON responses
+
     protected $cartModel;
 
     public function __construct()
@@ -16,26 +19,20 @@ class CartController extends BaseController
     }
 
     /**
-     * Menampilkan halaman keranjang belanja.
+     * Displays the shopping cart page.
      */
     public function index()
     {
         $userId = session()->get('user_id');
         $items = $this->cartModel->getCartItems($userId);
         
-        $total = 0;
-        foreach ($items as $item) {
-            $total += $item['harga'] * $item['quantity'];
-        }
-
         return view('cart_view', [
             'items' => $items,
-            'total' => $total
         ]);
     }
 
     /**
-     * Menambahkan produk ke keranjang.
+     * Adds a product to the cart.
      */
     public function add()
     {
@@ -43,18 +40,18 @@ class CartController extends BaseController
         $productId = $this->request->getPost('product_id');
         $quantity = $this->request->getPost('quantity');
 
-        // Cek apakah produk sudah ada di keranjang user
+        // Check if the product already exists in the user's cart
         $existingItem = $this->cartModel
             ->where('user_id', $userId)
             ->where('product_id', $productId)
             ->first();
 
         if ($existingItem) {
-            // Jika sudah ada, update quantity-nya
+            // If it exists, update the quantity
             $newQuantity = $existingItem['quantity'] + $quantity;
             $this->cartModel->update($existingItem['id'], ['quantity' => $newQuantity]);
         } else {
-            // Jika belum ada, tambahkan sebagai item baru
+            // If it doesn't exist, add it as a new item
             $this->cartModel->save([
                 'user_id'    => $userId,
                 'product_id' => $productId,
@@ -62,26 +59,43 @@ class CartController extends BaseController
             ]);
         }
 
-        session()->setFlashdata('success', 'Produk berhasil ditambahkan ke keranjang!');
+        session()->setFlashdata('success', 'Product has been successfully added to cart!');
         return redirect()->to('/cart');
     }
 
     /**
-     * Mengupdate kuantitas item di keranjang.
+     * Updates the quantity of an item in the cart via AJAX.
      */
     public function update()
     {
-        $cartItems = $this->request->getPost('cart');
-        foreach ($cartItems as $cartId => $data) {
-            $this->cartModel->update($cartId, ['quantity' => $data['quantity']]);
+        $cartId = $this->request->getPost('cart_id');
+        $quantity = $this->request->getPost('quantity');
+
+        // Validate the request
+        if (!$this->request->isAJAX() || empty($cartId) || empty($quantity)) {
+            return $this->failUnauthorized('Unauthorized access or invalid request.');
         }
-        
-        session()->setFlashdata('success', 'Keranjang berhasil diperbarui.');
-        return redirect()->to('/cart');
+
+        // Check if the user is authorized to update this cart item
+        $userId = session()->get('user_id');
+        $item = $this->cartModel->find($cartId);
+
+        if (!$item || $item['user_id'] != $userId) {
+            return $this->failUnauthorized('You are not authorized to update this item.');
+        }
+
+        // Update the quantity
+        $this->cartModel->update($cartId, ['quantity' => $quantity]);
+
+        // Get the new CSRF hash
+        $newCsrfHash = csrf_hash();
+
+        // Send a JSON response with the new CSRF hash
+        return $this->respond(['success' => true, 'message' => 'Quantity updated successfully.', 'csrf_hash' => $newCsrfHash]);
     }
 
     /**
-     * Menghapus item dari keranjang.
+     * Removes an item from the cart.
      */
     public function remove($cartId = null)
     {
@@ -90,7 +104,7 @@ class CartController extends BaseController
 
         if ($item) {
             $this->cartModel->delete($cartId);
-            session()->setFlashdata('success', 'Item berhasil dihapus dari keranjang.');
+            session()->setFlashdata('success', 'Item successfully removed from cart.');
         }
 
         return redirect()->to('/cart');

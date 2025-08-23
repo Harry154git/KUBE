@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateCartsTable extends Migration
+class CreateStoresTable extends Migration
 {
     public function up()
     {
@@ -20,15 +20,24 @@ class CreateCartsTable extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'product_id' => [
-                'type'       => 'INT',
-                'constraint' => 11,
-                'unsigned'   => true,
+            'store_name' => [ 
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
             ],
-            'quantity' => [
-                'type'       => 'INT',
-                'constraint' => 11,
-                'default'    => 1,
+            'store_description' => [ 
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'store_address' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '255',
+                'null'       => true,
+            ],
+            'bank_account' => [ 
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+                'null'       => true,
+                'comment'    => 'e.g., BCA 123456789 a/n John Doe',
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -40,14 +49,12 @@ class CreateCartsTable extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);
-        // Menambahkan foreign key untuk relasi data yang lebih baik
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('product_id', 'products', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('carts');
+        $this->forge->createTable('stores'); 
     }
 
     public function down()
     {
-        $this->forge->dropTable('carts');
+        $this->forge->dropTable('stores');
     }
 }

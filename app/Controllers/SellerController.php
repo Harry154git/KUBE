@@ -3,75 +3,78 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\TokoModel;
-use App\Models\UserModel; // Pastikan Anda sudah punya model ini
-use App\Models\ProductModel; // Pastikan Anda sudah punya model ini
+use App\Models\StoreModel; // Mengubah dari TokoModel
+use App\Models\UserModel; 
+use App\Models\ProductModel; 
+use App\Models\OrderModel; // Gunakan OrderModel, bukan OrderDetailModel
 use App\Models\OrderDetailModel;
 
 class SellerController extends BaseController
 {
-    protected $tokoModel;
+    protected $storeModel;
     protected $userModel;
     protected $productModel;
+    protected $orderModel;
     protected $orderDetailModel;
 
     public function __construct()
     {
-        $this->tokoModel = new TokoModel();
+        $this->storeModel = new StoreModel(); // Mengubah dari TokoModel()
         $this->userModel = new UserModel();
         $this->productModel = new ProductModel();
+        $this->orderModel = new OrderModel();
         $this->orderDetailModel = new OrderDetailModel();
-        // Load helper yang dibutuhkan
+        // Load required helper
         helper(['form', 'url']);
     }
 
     /**
-     * Halaman untuk mendaftar/mengaktifkan akun penjual.
+     * Page to register/activate a seller account.
      */
     public function activate()
     {
-        // Jika sudah jadi penjual, redirect ke dashboard
+        // If already a seller, redirect to dashboard
         if (session()->get('is_seller')) {
             return redirect()->to(route_to('seller.dashboard'));
         }
 
         if ($this->request->getMethod() === 'POST') {
             $rules = [
-                'nama_toko' => 'required|min_length[3]|max_length[100]',
-                'deskripsi_toko' => 'required|min_length[10]',
-                'alamat_toko' => 'required',
-                'rekening_bank' => 'required',
+                'store_name' => 'required|min_length[3]|max_length[100]', // Mengubah 'nama_toko'
+                'store_description' => 'required|min_length[10]', // Mengubah 'deskripsi_toko'
+                'store_address' => 'required', // Mengubah 'alamat_toko'
+                'bank_account' => 'required', // Mengubah 'rekening_bank'
             ];
 
             if ($this->validate($rules)) {
                 $userId = session()->get('user_id');
                 
-                // 1. Simpan data toko baru
-                $tokoData = [
+                // 1. Save new store data
+                $storeData = [
                     'user_id' => $userId,
-                    'nama_toko' => $this->request->getPost('nama_toko'),
-                    'deskripsi_toko' => $this->request->getPost('deskripsi_toko'),
-                    'alamat_toko' => $this->request->getPost('alamat_toko'),
-                    'rekening_bank' => $this->request->getPost('rekening_bank'),
+                    'store_name' => $this->request->getPost('store_name'), // Mengubah 'nama_toko'
+                    'store_description' => $this->request->getPost('store_description'), // Mengubah 'deskripsi_toko'
+                    'store_address' => $this->request->getPost('store_address'), // Mengubah 'alamat_toko'
+                    'bank_account' => $this->request->getPost('bank_account'), // Mengubah 'rekening_bank'
                 ];
-                $this->tokoModel->insert($tokoData);
-                $tokoId = $this->tokoModel->getInsertID();
+                $this->storeModel->insert($storeData);
+                $storeId = $this->storeModel->getInsertID();
 
-                // 2. Update status pengguna menjadi penjual
+                // 2. Update user status to seller
                 $this->userModel->update($userId, [
                     'is_seller' => 1,
-                    'toko_id' => $tokoId
+                    'store_id' => $storeId // Mengubah 'toko_id'
                 ]);
 
                 // 3. Update session
                 $sessionData = [
                     'is_seller' => 1,
-                    'toko_id' => $tokoId,
-                    'nama_toko' => $tokoData['nama_toko'],
+                    'store_id' => $storeId, // Mengubah 'toko_id'
+                    'store_name' => $storeData['store_name'], // Mengubah 'nama_toko'
                 ];
                 session()->set($sessionData);
 
-                return redirect()->to(route_to('seller.dashboard'))->with('message', 'Selamat! Toko Anda berhasil diaktifkan.');
+                return redirect()->to(route_to('seller.dashboard'))->with('message', 'Congratulations! Your store has been activated.');
             } else {
                 return view('seller/activate', [
                     'validation' => $this->validator
@@ -83,119 +86,125 @@ class SellerController extends BaseController
     }
 
     /**
-     * Halaman dashboard penjual.
+     * Seller dashboard page.
      */
     public function dashboard()
     {
-        // Pastikan hanya penjual yang bisa akses
+        // Ensure only sellers can access
         if (!session()->get('is_seller')) {
-            return redirect()->to('/home')->with('error', 'Anda bukan penjual.');
+            return redirect()->to('/home')->with('error', 'You are not a seller.');
         }
         
-        // Anda bisa menambahkan logika untuk statistik di sini
+        // You can add logic for statistics here
         $data = [
-            'title' => 'Dashboard Penjual',
+            'title' => 'Seller Dashboard',
         ];
         return view('seller/dashboard', $data);
     }
 
     /**
-     * Halaman untuk melihat produk yang dijual.
+     * Page to view products for sale.
      */
     public function products()
     {
         if (!session()->get('is_seller')) return redirect()->to('/home');
         
-        $tokoId = session()->get('toko_id');
+        $storeId = session()->get('store_id'); // Mengubah 'toko_id'
         $data = [
-            'title' => 'Produk Saya',
-            'products' => $this->productModel->where('toko_id', $tokoId)->findAll()
+            'title' => 'My Products',
+            'products' => $this->productModel->where('store_id', $storeId)->findAll() // Mengubah 'toko_id'
         ];
         return view('seller/products', $data);
     }
 
     /**
-     * Halaman untuk melihat dan mengelola pesanan masuk.
+     * Page to view and manage incoming orders.
+     * With the new model, each order is from a single store.
      */
     public function orders()
     {
         if (!session()->get('is_seller')) return redirect()->to('/home');
         
-        $tokoId = session()->get('toko_id');
+        $storeId = session()->get('store_id'); // Mengubah 'toko_id'
         $data = [
-            'title' => 'Pesanan Masuk',
-            'orders' => $this->orderDetailModel->getOrdersByTokoId($tokoId)
+            'title' => 'Incoming Orders',
+            // Gunakan OrderModel untuk mengambil pesanan yang terkait dengan toko ini
+            'orders' => $this->orderModel->where('store_id', $storeId)->findAll() // Mengubah dari OrderDetailModel
         ];
         return view('seller/orders', $data);
     }
 
     /**
-     * Method untuk mengupdate status pesanan.
+     * Method to update order status.
+     * Logic is simplified with the new one-order-per-store model.
      */
     public function updateOrderStatus()
     {
-        if (!session()->get('is_seller')) return redirect()->to('/home');
-
-        $orderDetailId = $this->request->getPost('order_detail_id');
-        $newStatus = $this->request->getPost('status');
-        $tokoId = session()->get('toko_id');
-
-        // Validasi bahwa pesanan ini benar-benar milik toko ini
-        $orderDetail = $this->orderDetailModel->where('id', $orderDetailId)->where('toko_id', $tokoId)->first();
-
-        if ($orderDetail) {
-            $this->orderDetailModel->update($orderDetailId, ['status_pesanan_penjual' => $newStatus]);
-            return redirect()->to(route_to('seller.orders'))->with('message', 'Status pesanan berhasil diperbarui.');
+        if (!session()->get('is_seller')) {
+            return redirect()->to('/home');
         }
 
-        return redirect()->to(route_to('seller.orders'))->with('error', 'Gagal memperbarui status pesanan.');
+        $orderId = $this->request->getPost('order_id');
+        $newStatus = $this->request->getPost('status');
+        $storeId = session()->get('store_id');
+
+        // Find the order by ID and ensure it belongs to the logged-in store
+        $order = $this->orderModel->where('id', $orderId)->where('store_id', $storeId)->first();
+
+        if ($order) {
+            // Update the status
+            $this->orderModel->update($orderId, ['status' => $newStatus]);
+            return redirect()->to(route_to('seller.orders'))->with('message', 'Order status successfully updated.');
+        }
+
+        return redirect()->to(route_to('seller.orders'))->with('error', 'Failed to update order status. Order not found or not owned by your store.');
     }
 
     /**
-     * Halaman pengaturan toko.
+     * Store settings page.
      */
     public function settings()
     {
         if (!session()->get('is_seller')) return redirect()->to('/home');
 
-        $tokoId = session()->get('toko_id');
-        $toko = $this->tokoModel->find($tokoId);
+        $storeId = session()->get('store_id'); // Mengubah 'toko_id'
+        $store = $this->storeModel->find($storeId); // Mengubah $this->tokoModel->find($tokoId)
 
         if ($this->request->getMethod() === 'POST') {
             $rules = [
-                'nama_toko' => 'required|min_length[3]|max_length[100]',
-                'deskripsi_toko' => 'required|min_length[10]',
-                'alamat_toko' => 'required',
-                'rekening_bank' => 'required',
+                'store_name' => 'required|min_length[3]|max_length[100]',
+                'store_description' => 'required|min_length[10]',
+                'store_address' => 'required',
+                'bank_account' => 'required',
             ];
             
             if ($this->validate($rules)) {
                 $dataUpdate = [
-                    'nama_toko' => $this->request->getPost('nama_toko'),
-                    'deskripsi_toko' => $this->request->getPost('deskripsi_toko'),
-                    'alamat_toko' => $this->request->getPost('alamat_toko'),
-                    'rekening_bank' => $this->request->getPost('rekening_bank'),
+                    'store_name' => $this->request->getPost('store_name'),
+                    'store_description' => $this->request->getPost('store_description'),
+                    'store_address' => $this->request->getPost('store_address'),
+                    'bank_account' => $this->request->getPost('bank_account'),
                 ];
-                $this->tokoModel->update($tokoId, $dataUpdate);
+                $this->storeModel->update($storeId, $dataUpdate);
 
-                // Update session jika nama toko berubah
-                if($dataUpdate['nama_toko'] !== session()->get('nama_toko')) {
-                    session()->set('nama_toko', $dataUpdate['nama_toko']);
+                // Update session if store name changes
+                if($dataUpdate['store_name'] !== session()->get('store_name')) {
+                    session()->set('store_name', $dataUpdate['store_name']);
                 }
 
-                return redirect()->to(route_to('seller.settings'))->with('message', 'Pengaturan toko berhasil diperbarui.');
+                return redirect()->to(route_to('seller.settings'))->with('message', 'Store settings successfully updated.');
             } else {
                 return view('seller/settings', [
-                    'title' => 'Pengaturan Toko',
-                    'toko' => $toko,
+                    'title' => 'Store Settings',
+                    'store' => $store,
                     'validation' => $this->validator
                 ]);
             }
         }
 
         $data = [
-            'title' => 'Pengaturan Toko',
-            'toko' => $toko
+            'title' => 'Store Settings',
+            'store' => $store
         ];
         return view('seller/settings', $data);
     }

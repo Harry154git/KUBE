@@ -8,40 +8,75 @@ class CreateOrderTables extends Migration
 {
     public function up()
     {
-        // 1. Buat Tabel `pesanan`
+        // === Tabel 'orders' ===
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
+            ],
+            'invoice_number' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'unique'     => true,
             ],
             'user_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
-                'comment'    => 'ID Pembeli',
             ],
-            'total_harga' => [
+            'store_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
+            'total_amount' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
-                'null'       => false,
             ],
-            'status_pembayaran' => [
+            'shipping_cost' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '10,2',
+                'default'    => 0,
+            ],
+            'shipping_address_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+            ],
+            'shipping_method' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 50,
+                'null'       => true,
+            ],
+            'payment_method' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 50,
+                'null'       => true,
+            ],
+            'status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['pending', 'paid', 'failed'],
-                'default'    => 'pending',
+                'constraint' => ['pending_payment', 'processing', 'shipped', 'completed', 'canceled'],
+                'default'    => 'pending_payment',
             ],
             'created_at' => [
                 'type' => 'DATETIME',
-                'null' => false,
+                'null' => true,
+            ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
             ],
         ]);
+
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('pesanan');
+        $this->forge->addForeignKey('store_id', 'stores', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('shipping_address_id', 'addresses', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('orders');
 
-        // 2. Buat Tabel `detail_pesanan`
+        // === Tabel 'order_details' ===
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
@@ -49,49 +84,35 @@ class CreateOrderTables extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'pesanan_id' => [
+            'order_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'produk_id' => [
+            'product_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'toko_id' => [
-                'type'       => 'INT',
-                'constraint' => 11,
-                'unsigned'   => true,
-                'comment'    => 'ID Toko Penjual',
-            ],
-            'jumlah' => [
+            'quantity' => [
                 'type'       => 'INT',
                 'constraint' => 11,
             ],
-            'harga_saat_beli' => [
+            'price_at_purchase' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
             ],
-            'status_pesanan_penjual' => [
-                'type'       => 'ENUM',
-                'constraint' => ['pending', 'diproses', 'dikirim', 'selesai', 'dibatalkan'],
-                'default'    => 'pending',
-            ],
         ]);
+        
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('pesanan_id', 'pesanan', 'id', 'CASCADE', 'CASCADE');
-        // --- PERBAIKAN DI SINI ---
-        $this->forge->addForeignKey('produk_id', 'products', 'id', 'CASCADE', 'CASCADE'); // Mengubah 'produk' menjadi 'products'
-        // --- AKHIR PERBAIKAN ---
-        $this->forge->addForeignKey('toko_id', 'toko', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('detail_pesanan');
+        $this->forge->addForeignKey('order_id', 'orders', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('product_id', 'products', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('order_details');
     }
 
     public function down()
     {
-        // Hapus tabel dengan urutan terbalik karena ada foreign key
-        $this->forge->dropTable('detail_pesanan');
-        $this->forge->dropTable('pesanan');
+        $this->forge->dropTable('order_details');
+        $this->forge->dropTable('orders');
     }
 }

@@ -4,14 +4,14 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class TokoModel extends Model
+class StoreModel extends Model
 {
-    protected $table            = 'toko';
+    protected $table            = 'stores';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
-    protected $allowedFields    = ['user_id', 'nama_toko', 'deskripsi_toko', 'alamat_toko', 'rekening_bank'];
+    protected $allowedFields  = ['user_id', 'store_name', 'store_description', 'store_address', 'bank_account'];
 
     // Dates
     protected $useTimestamps = true;

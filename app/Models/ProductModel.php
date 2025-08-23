@@ -6,16 +6,13 @@ use CodeIgniter\Model;
 
 class ProductModel extends Model
 {
-    protected $table            = 'products';
+    protected $table = 'products'; 
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'array'; // Added for consistency
-    protected $useSoftDeletes   = false; // Added for clarity
-    
-    // Updated allowedFields to include toko_id
-    protected $allowedFields    = ['toko_id', 'nama_produk', 'deskripsi', 'harga', 'stok', 'gambar_produk'];
+    protected $returnType       = 'array'; 
+    protected $useSoftDeletes   = false; 
+    protected $allowedFields    = ['store_id', 'product_name', 'description', 'price', 'stock', 'product_image'];
 
-    // Dates
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

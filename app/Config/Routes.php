@@ -30,49 +30,73 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 
-// --- RUTE PUBLIK (Bisa diakses tanpa login) ---
+// --- PUBLIC ROUTES (Accessible without login) ---
 $routes->get('/', 'AuthController::login');
 $routes->get('/login', 'AuthController::login');
 $routes->post('/login', 'AuthController::attemptLogin');
 $routes->get('/logout', 'AuthController::logout');
 $routes->match(['get', 'post'], 'register', 'AuthController::register');
 
-// Rute untuk pencarian produk
+// Route for product search
 $routes->get('/search', 'SearchController::search');
 
 
-// --- RUTE TERPROTEKSI (Harus login untuk akses) ---
+// --- PROTECTED ROUTES (Must be logged in to access) ---
 $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('/home', 'HomeController::index');
     
-    // Rute untuk Produk
+    // Product Routes
     $routes->get('product/(:num)', 'ProductController::detail/$1');
 
-    // Rute untuk Keranjang
+    // Cart Routes
     $routes->get('cart', 'CartController::index');
     $routes->post('cart/add', 'CartController::add');
     $routes->post('cart/update', 'CartController::update');
     $routes->get('cart/remove/(:num)', 'CartController::remove/$1');
 
-    // Rute placeholder untuk checkout
-    $routes->get('checkout', 'CheckoutController::index');
-
-    // Rute untuk Profil & Pengaturan Pengguna
+    // User Profile & Settings Routes
     $routes->get('profile', 'UserController::profile');
     $routes->match(['get', 'post'], 'settings', 'UserController::settings');
 
-    // --- RUTE PENJUAL ---
+    // --- NEW ROUTES FOR ORDER HISTORY & TRACKING ---
+    $routes->get('order/history', 'OrderController::history'); // Mengubah 'order-history'
+    $routes->get('order/track/(:segment)', 'OrderController::track/$1');
+    // --- END OF NEW ROUTES ---
+
+    // --- NEW ROUTES FOR ADDRESS MANAGEMENT ---
+    $routes->get('addresses', 'AddressController::index');
+    $routes->post('addresses/create', 'AddressController::create');
+    $routes->post('addresses/update/(:num)', 'AddressController::update/$1');
+    $routes->get('addresses/delete/(:num)', 'AddressController::delete/$1');
+    $routes->get('addresses/set-primary/(:num)', 'AddressController::setPrimary/$1');
+    // --- END OF ADDRESS MANAGEMENT ROUTES ---
+
+    // --- NEW ROUTES FOR CHECKOUT ---
+    $routes->get('checkout', 'CheckoutController::index');
+    $routes->post('checkout/initiate', 'CheckoutController::initiate');
+    $routes->post('checkout/process', 'CheckoutController::process');
+    $routes->get('order/success/(:num)', 'CheckoutController::success/$1');
+    // --- END OF CHECKOUT ROUTES ---
+
+    // --- CHAT FEATURE ROUTES ---
+    $routes->get('chat/conversations', 'ChatController::index');
+    $routes->get('chat/messages/(:num)', 'ChatController::getMessages/$1');
+    $routes->post('chat/send/(:num)', 'ChatController::sendMessage/$1');
+    $routes->get('chat/start/store/(:num)', 'ChatController::startWithSeller/$1', ['as' => 'chat.start_with_seller']); // Mengubah 'toko'
+    // --- END OF CHAT ROUTES ---
+
+    // --- SELLER ROUTES ---
     $routes->group('seller', function($routes) {
-        // Halaman aktivasi
+        // Activation page
         $routes->match(['get', 'post'], 'activate', 'SellerController::activate', ['as' => 'seller.activate']);
         
-        // Halaman setelah menjadi penjual
+        // Pages after becoming a seller
         $routes->get('dashboard', 'SellerController::dashboard', ['as' => 'seller.dashboard']);
         $routes->get('orders', 'SellerController::orders', ['as' => 'seller.orders']);
         $routes->post('orders/update-status', 'SellerController::updateOrderStatus', ['as' => 'seller.updateOrderStatus']);
         $routes->match(['get', 'post'], 'settings', 'SellerController::settings', ['as' => 'seller.settings']);
 
-        // --- RUTE BARU UNTUK MANAJEMEN PRODUK PENJUAL ---
+        // --- SELLER PRODUCT MANAGEMENT ROUTES ---
         $routes->get('products', 'SellerController::products', ['as' => 'seller.products']);
         $routes->get('products/add', 'ProductController::add', ['as' => 'seller.products.add']);
         $routes->post('products/create', 'ProductController::create', ['as' => 'seller.products.create']);

@@ -16,7 +16,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Menampilkan halaman profil pengguna.
+     * Displays the user profile page.
      */
     public function profile()
     {
@@ -27,7 +27,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Menampilkan halaman pengaturan dan menangani pembaruan data.
+     * Displays the settings page and handles data updates.
      */
     public function settings()
     {
@@ -35,7 +35,7 @@ class UserController extends BaseController
         $data['user'] = $this->userModel->find($userId);
 
         if ($this->request->getMethod() === 'post') {
-            // Cek jenis form yang di-submit
+            // Check the type of form submitted
             $formType = $this->request->getPost('form_type');
 
             if ($formType === 'update_profile') {
@@ -53,7 +53,7 @@ class UserController extends BaseController
     private function updateProfile($userId)
     {
         $rules = [
-            'nama_lengkap' => 'required|min_length[3]|max_length[255]',
+            'full_name' => 'required|min_length[3]|max_length[255]', // Mengubah 'nama_lengkap'
         ];
 
         if (!$this->validate($rules)) {
@@ -61,13 +61,13 @@ class UserController extends BaseController
         }
 
         $this->userModel->update($userId, [
-            'nama_lengkap' => $this->request->getPost('nama_lengkap'),
+            'full_name' => $this->request->getPost('full_name'), // Mengubah 'nama_lengkap'
         ]);
 
-        // Update session juga agar nama di navbar berubah
-        session()->set('nama_lengkap', $this->request->getPost('nama_lengkap'));
+        // Update session as well so the name in the navbar changes
+        session()->set('full_name', $this->request->getPost('full_name')); // Mengubah 'nama_lengkap'
 
-        session()->setFlashdata('success', 'Profil berhasil diperbarui.');
+        session()->setFlashdata('success', 'Profile successfully updated.');
         return redirect()->to('/settings');
     }
 
@@ -87,16 +87,16 @@ class UserController extends BaseController
         $currentPassword = $this->request->getPost('current_password');
         $newPassword = $this->request->getPost('new_password');
 
-        // Verifikasi password lama
+        // Verify old password
         if (!password_verify($currentPassword, $user['password'])) {
-            session()->setFlashdata('error', 'Password lama Anda tidak cocok.');
+            session()->setFlashdata('error', 'Your old password does not match.');
             return redirect()->to('/settings');
         }
 
-        // Update password baru (Model akan hash otomatis)
+        // Update new password (Model will hash automatically)
         $this->userModel->update($userId, ['password' => $newPassword]);
 
-        session()->setFlashdata('success', 'Password berhasil diubah.');
+        session()->setFlashdata('success', 'Password successfully changed.');
         return redirect()->to('/settings');
     }
 }

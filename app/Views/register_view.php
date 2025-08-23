@@ -20,23 +20,23 @@
     <div class="container register-container">
         <div class="card shadow-sm">
             <div class="card-body p-5">
-                <h2 class="card-title text-center mb-4">Buat Akun Baru</h2>
+                <h2 class="card-title text-center mb-4">Create New Account</h2>
 
-                <!-- Menampilkan notifikasi error validasi -->
+                <!-- Display validation error notifications -->
                 <?php if(isset($validation)): ?>
                     <div class="alert alert-danger" role="alert">
                         <?= $validation->listErrors() ?>
                     </div>
                 <?php endif; ?>
 
-                <!-- Form Registrasi -->
+                <!-- Registration Form -->
                 <?= form_open('register') ?>
                     <div class="mb-3">
-                        <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control" name="nama_lengkap" id="nama_lengkap" value="<?= set_value('nama_lengkap') ?>">
+                        <label for="full_name" class="form-label">Full Name</label> <!-- Mengubah 'nama_lengkap' -->
+                        <input type="text" class="form-control" name="full_name" id="full_name" value="<?= set_value('full_name') ?>">
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Alamat Email</label>
+                        <label for="email" class="form-label">Email Address</label>
                         <input type="email" class="form-control" name="email" id="email" value="<?= set_value('email') ?>">
                     </div>
                     <div class="mb-3">
@@ -44,7 +44,7 @@
                         <input type="password" class="form-control" name="password" id="password">
                     </div>
                     <div class="mb-3">
-                        <label for="password_confirm" class="form-label">Konfirmasi Password</label>
+                        <label for="password_confirm" class="form-label">Confirm Password</label>
                         <input type="password" class="form-control" name="password_confirm" id="password_confirm">
                     </div>
                     <div class="d-grid">
@@ -53,7 +53,7 @@
                 <?= form_close() ?>
 
                 <div class="text-center mt-3">
-                    <p>Sudah punya akun? <a href="/login">Login di sini</a></p>
+                    <p>Already have an account? <a href="/login">Login here</a></p>
                 </div>
             </div>
         </div>

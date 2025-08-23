@@ -1,16 +1,16 @@
 <?= $this->extend('layouts/main_layout') ?>
 
 <?= $this->section('title') ?>
-    Hasil Pencarian untuk "<?= esc($keyword ?? '') ?>"
+    Search Results for "<?= esc($keyword ?? '') ?>"
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
     <div class="container my-5">
         <h1 class="mb-4">
             <?php if (!empty($keyword)): ?>
-                Hasil Pencarian untuk "<strong><?= esc($keyword) ?></strong>"
+                Search Results for "<strong><?= esc($keyword) ?></strong>"
             <?php else: ?>
-                Silakan Masukkan Kata Kunci di Kolom Pencarian
+                Please Enter a Keyword in the Search Bar
             <?php endif; ?>
         </h1>
         <hr>
@@ -21,11 +21,11 @@
                     <div class="col">
                         <div class="card h-100 shadow-sm">
                             <a href="/product/<?= $product['id'] ?>" class="text-decoration-none text-dark">
-                                <img src="<?= esc($product['gambar_produk']) ?>" class="card-img-top" alt="<?= esc($product['nama_produk']) ?>" style="height: 200px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/600x400/CCCCCC/333333?text=Image';">
+                                <img src="/uploads/products/<?= esc($product['product_image']) ?>" class="card-img-top" alt="<?= esc($product['product_name']) ?>" style="height: 200px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/600x400/CCCCCC/333333?text=Image';">
                                 <div class="card-body">
-                                    <h5 class="card-title"><?= esc($product['nama_produk']) ?></h5>
-                                    <p class="card-text text-muted small"><?= esc(substr($product['deskripsi'], 0, 50)) ?>...</p>
-                                    <h6 class="card-subtitle mb-2 text-primary fw-bold">Rp <?= number_format($product['harga'], 0, ',', '.') ?></h6>
+                                    <h5 class="card-title"><?= esc($product['product_name']) ?></h5>
+                                    <p class="card-text text-muted small"><?= esc(substr($product['description'], 0, 50)) ?>...</p>
+                                    <h6 class="card-subtitle mb-2 text-primary fw-bold">Rp <?= number_format($product['price'], 0, ',', '.') ?></h6>
                                 </div>
                             </a>
                         </div>
@@ -35,7 +35,7 @@
                 <div class="col-12">
                     <div class="alert alert-warning text-center" role="alert">
                         <h4 class="alert-heading">Oops!</h4>
-                        <p>Produk dengan kata kunci "<?= esc($keyword) ?>" tidak dapat kami temukan. Silakan coba kata kunci lain.</p>
+                        <p>We couldn't find any products with the keyword "<?= esc($keyword) ?>". Please try another keyword.</p>
                     </div>
                 </div>
             <?php endif; ?>

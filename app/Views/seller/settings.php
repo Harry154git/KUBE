@@ -1,25 +1,24 @@
-<!-- Simpan sebagai app/Views/seller/settings.php -->
 <?= $this->extend('layouts/main_layout') ?>
 
 <?= $this->section('title') ?>
-Pengaturan Toko - <?= esc(session()->get('nama_toko')) ?>
+Store Settings - <?= esc(session()->get('store_name')) ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="container my-4">
     <div class="row">
-        <!-- Menu Navigasi Penjual -->
+        <!-- Seller Navigation Menu -->
         <div class="col-md-3">
             <div class="list-group">
                 <a href="<?= route_to('seller.dashboard') ?>" class="list-group-item list-group-item-action"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                <a href="<?= route_to('seller.products') ?>" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i>Produk Saya</a>
-                <a href="<?= route_to('seller.orders') ?>" class="list-group-item list-group-item-action"><i class="bi bi-receipt me-2"></i>Pesanan Masuk</a>
-                <a href="<?= route_to('seller.settings') ?>" class="list-group-item list-group-item-action active"><i class="bi bi-gear me-2"></i>Pengaturan Toko</a>
+                <a href="<?= route_to('seller.products') ?>" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i>My Products</a>
+                <a href="<?= route_to('seller.orders') ?>" class="list-group-item list-group-item-action"><i class="bi bi-receipt me-2"></i>Incoming Orders</a>
+                <a href="<?= route_to('seller.settings') ?>" class="list-group-item list-group-item-action active"><i class="bi bi-gear me-2"></i>Store Settings</a>
             </div>
         </div>
-        <!-- Konten Pengaturan -->
+        <!-- Settings Content -->
         <div class="col-md-9">
-            <h3>Pengaturan Toko</h3>
+            <h3>Store Settings</h3>
             
             <?php if(session()->getFlashdata('message')): ?>
                 <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>
@@ -33,22 +32,22 @@ Pengaturan Toko - <?= esc(session()->get('nama_toko')) ?>
                     <form action="<?= route_to('seller.settings') ?>" method="post">
                         <?= csrf_field() ?>
                         <div class="mb-3">
-                            <label for="nama_toko" class="form-label">Nama Toko</label>
-                            <input type="text" class="form-control" id="nama_toko" name="nama_toko" value="<?= set_value('nama_toko', $toko['nama_toko'] ?? '') ?>" required>
+                            <label for="store_name" class="form-label">Store Name</label>
+                            <input type="text" class="form-control" id="store_name" name="store_name" value="<?= set_value('store_name', $store['store_name'] ?? '') ?>" required>
                         </div>
                         <div class="mb-3">
-                            <label for="deskripsi_toko" class="form-label">Deskripsi Singkat Toko</label>
-                            <textarea class="form-control" id="deskripsi_toko" name="deskripsi_toko" rows="3" required><?= set_value('deskripsi_toko', $toko['deskripsi_toko'] ?? '') ?></textarea>
+                            <label for="store_description" class="form-label">Brief Store Description</label>
+                            <textarea class="form-control" id="store_description" name="store_description" rows="3" required><?= set_value('store_description', $store['store_description'] ?? '') ?></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="alamat_toko" class="form-label">Alamat Pengiriman (Kota)</label>
-                            <input type="text" class="form-control" id="alamat_toko" name="alamat_toko" value="<?= set_value('alamat_toko', $toko['alamat_toko'] ?? '') ?>" placeholder="Contoh: Jakarta Pusat" required>
+                            <label for="store_address" class="form-label">Shipping Address (City)</label>
+                            <input type="text" class="form-control" id="store_address" name="store_address" value="<?= set_value('store_address', $store['store_address'] ?? '') ?>" placeholder="e.g., Central Jakarta" required>
                         </div>
                         <div class="mb-3">
-                            <label for="rekening_bank" class="form-label">Rekening Bank untuk Pencairan Dana</label>
-                            <input type="text" class="form-control" id="rekening_bank" name="rekening_bank" value="<?= set_value('rekening_bank', $toko['rekening_bank'] ?? '') ?>" placeholder="Contoh: BCA 123456789 a/n John Doe" required>
+                            <label for="bank_account" class="form-label">Bank Account for Payouts</label>
+                            <input type="text" class="form-control" id="bank_account" name="bank_account" value="<?= set_value('bank_account', $store['bank_account'] ?? '') ?>" placeholder="e.g., BCA 123456789 a/n John Doe" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
                 </div>
             </div>

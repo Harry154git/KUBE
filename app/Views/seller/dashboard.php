@@ -1,35 +1,34 @@
-<!-- Simpan sebagai app/Views/seller/dashboard.php -->
 <?= $this->extend('layouts/main_layout') ?>
 
 <?= $this->section('title') ?>
-Dashboard Penjual - <?= esc(session()->get('nama_toko')) ?>
+Seller Dashboard - <?= esc(session()->get('store_name')) ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="container my-4">
-    <h2 class="mb-4">Dashboard Penjual</h2>
+    <h2 class="mb-4">Seller Dashboard</h2>
 
     <?php if(session()->getFlashdata('message')): ?>
         <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>
     <?php endif; ?>
 
     <div class="row">
-        <!-- Menu Navigasi Penjual -->
+        <!-- Seller Navigation Menu -->
         <div class="col-md-3">
             <div class="list-group">
                 <a href="<?= route_to('seller.dashboard') ?>" class="list-group-item list-group-item-action active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                <a href="<?= route_to('seller.products') ?>" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i>Produk Saya</a>
-                <a href="<?= route_to('seller.orders') ?>" class="list-group-item list-group-item-action"><i class="bi bi-receipt me-2"></i>Pesanan Masuk</a>
-                <a href="<?= route_to('seller.settings') ?>" class="list-group-item list-group-item-action"><i class="bi bi-gear me-2"></i>Pengaturan Toko</a>
+                <a href="<?= route_to('seller.products') ?>" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i>My Products</a>
+                <a href="<?= route_to('seller.orders') ?>" class="list-group-item list-group-item-action"><i class="bi bi-receipt me-2"></i>Incoming Orders</a>
+                <a href="<?= route_to('seller.settings') ?>" class="list-group-item list-group-item-action"><i class="bi bi-gear me-2"></i>Store Settings</a>
             </div>
         </div>
-        <!-- Konten Utama Dashboard -->
+        <!-- Main Dashboard Content -->
         <div class="col-md-9">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Selamat Datang, <?= esc(session()->get('nama_lengkap')) ?>!</h5>
-                    <p class="card-text">Anda sekarang berada di dashboard toko <strong><?= esc(session()->get('nama_toko')) ?></strong>. Gunakan menu di samping untuk mengelola toko Anda.</p>
-                    <!-- Anda bisa menambahkan statistik penjualan, pesanan baru, dll di sini -->
+                    <h5 class="card-title">Welcome, <?= esc(session()->get('full_name')) ?>!</h5>
+                    <p class="card-text">You are now in the dashboard for store <strong><?= esc(session()->get('store_name')) ?></strong>. Use the side menu to manage your store.</p>
+                    <!-- You can add sales statistics, new orders, etc. here -->
                 </div>
             </div>
         </div>
