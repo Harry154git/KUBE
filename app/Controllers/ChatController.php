@@ -6,142 +6,152 @@ use App\Controllers\BaseController;
 use App\Models\ConversationModel;
 use App\Models\MessageModel;
 use App\Models\UserModel;
-use App\Models\StoreModel; // Mengubah dari TokoModel menjadi StoreModel
+use App\Models\ProductModel; // Pastikan Anda punya ProductModel
 
 class ChatController extends BaseController
 {
     protected $conversationModel;
     protected $messageModel;
     protected $userModel;
-    protected $storeModel; // Mengubah dari $tokoModel menjadi $storeModel
+    protected $productModel;
 
     public function __construct()
     {
         $this->conversationModel = new ConversationModel();
         $this->messageModel = new MessageModel();
         $this->userModel = new UserModel();
-        $this->storeModel = new StoreModel(); // Mengubah dari TokoModel()
+        $this->productModel = new ProductModel(); // Inisialisasi ProductModel
     }
 
-    /**
-     * JSON endpoint to retrieve a user's conversation list.
-     */
     public function index()
     {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403);
-        }
-
+        if (!$this->request->isAJAX()) { return $this->response->setStatusCode(403); }
         $userId = session()->get('user_id');
         $conversations = $this->conversationModel->getConversationsForUser($userId);
-
         return $this->response->setJSON($conversations);
     }
 
-    /**
-     * Starts a new conversation with a seller or shows an existing one.
-     * This function finds the seller's user_id from the given store_id.
-     */
-    public function startWithSeller($storeId) // Mengubah 'tokoId' menjadi 'storeId'
+    public function startChatFromProduct($sellerId, $productId)
     {
-        $currentUserId = session()->get('user_id');
+        // Pastikan ini adalah request AJAX
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403, 'Invalid request type.');
+        }
+
+        $buyerId = session()->get('user_id');
+
+        if (!$buyerId) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Silakan login untuk memulai chat.'])->setStatusCode(401);
+        }
+        if ($buyerId == $sellerId) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Anda tidak bisa mengirim pesan ke diri sendiri.'])->setStatusCode(400);
+        }
+
+        // Cari atau buat percakapan
+        $conversation = $this->conversationModel->findConversation($buyerId, $sellerId);
         
-        $store = $this->storeModel->find($storeId); // Mengubah $toko menjadi $store
-        if (!$store) {
-            return redirect()->back()->with('error', 'Store not found.');
-        }
+        $conversationId = $conversation ? $conversation['id'] : $this->conversationModel->insert(['user1_id' => $buyerId, 'user2_id' => $sellerId]);
 
-        $sellerUserId = $store['user_id'];
-
-        // Prevents a user from chatting with themselves
-        if ($currentUserId == $sellerUserId) {
-            return redirect()->back()->with('error', 'You cannot send messages to your own store.');
-        }
-
-        $conversation = $this->conversationModel->findConversation($currentUserId, $sellerUserId);
-
-        if (!$conversation) {
-            // Create a new conversation if it doesn't exist
-            $conversationId = $this->conversationModel->insert([
-                'user1_id' => $currentUserId,
-                'user2_id' => $sellerUserId,
+        // Cek apakah pesan produk ini sudah pernah dikirim
+        $existingProductMessage = $this->messageModel->where([
+            'conversation_id' => $conversationId, 'sender_id' => $buyerId, 'product_id' => $productId
+        ])->first();
+        
+        // Hanya kirim pesan produk jika belum pernah ada di percakapan ini
+        if (!$existingProductMessage) {
+            $this->messageModel->insert([
+                'conversation_id' => $conversationId,
+                'sender_id'       => $buyerId,
+                'product_id'      => $productId,
+                'message'         => null,
             ]);
-        } else {
-            $conversationId = $conversation['id'];
-        }
-
-        // Redirect to a URL that can automatically open the chat window
-        return redirect()->to('/#chat/conversation/' . $conversationId);
-    }
-
-    /**
-     * JSON endpoint to retrieve all messages within a conversation.
-     */
-    public function getMessages($conversationId)
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403);
         }
         
-        $userId = session()->get('user_id');
-
-        // Security: ensure the user is part of this conversation
-        $conversation = $this->conversationModel->find($conversationId);
-        if (!$conversation || ($conversation['user1_id'] != $userId && $conversation['user2_id'] != $userId)) {
-            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(403);
-        }
-
-        // Mark messages from the other party as "read"
-        $this->messageModel
-            ->where('conversation_id', $conversationId)
-            ->where('sender_id !=', $userId)
-            ->set(['is_read' => 1, 'read_at' => date('Y-m-d H:i:s')])
-            ->update();
-
-        $messages = $this->messageModel
-                             ->where('conversation_id', $conversationId)
-                             ->orderBy('created_at', 'ASC')
-                             ->findAll();
-        
-        $recipientId = ($conversation['user1_id'] == $userId) ? $conversation['user2_id'] : $conversation['user1_id'];
-        $recipient = $this->userModel->select('id, full_name')->find($recipientId); // Mengubah 'nama_lengkap'
-
-        return $this->response->setJSON([
-            'messages' => $messages,
-            'recipient' => $recipient
-        ]);
-    }
-
-    /**
-     * JSON endpoint to send a new message.
-     */
-    public function sendMessage($conversationId)
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403);
-        }
-
-        $userId = session()->get('user_id');
-        $messageText = $this->request->getPost('message');
-
-        if (empty(trim($messageText))) {
-            return $this->response->setJSON(['error' => 'Message cannot be empty.'])->setStatusCode(400);
-        }
-
-        $conversation = $this->conversationModel->find($conversationId);
-        if (!$conversation || ($conversation['user1_id'] != $userId && $conversation['user2_id'] != $userId)) {
-            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(403);
-        }
-
-        $this->messageModel->insert([
-            'conversation_id' => $conversationId,
-            'sender_id'       => $userId,
-            'message'         => esc($messageText), // Sanitize the message
-        ]);
-        
-        // Update the conversation's timestamp to bring it to the top of the list
         $this->conversationModel->update($conversationId, ['updated_at' => date('Y-m-d H:i:s')]);
 
+        // Kembalikan response JSON berisi ID percakapan
+        return $this->response->setJSON(['success' => true, 'conversation_id' => $conversationId]);
+    }
+    
+    public function getMessages($conversationId)
+    {
+        if (!$this->request->isAJAX()) { return $this->response->setStatusCode(403); }
+        $userId = session()->get('user_id');
+        $conversation = $this->conversationModel->find($conversationId);
+        if (!$conversation || ($conversation['user1_id'] != $userId && $conversation['user2_id'] != $userId)) {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(403);
+        }
+
+        $this->messageModel->where('conversation_id', $conversationId)
+            ->where('sender_id !=', $userId)->set(['is_read' => 1])->update();
+
+        $messages = $this->messageModel
+            ->select('messages.*, p.product_name, p.price, p.product_image')
+            ->join('products p', 'p.id = messages.product_id', 'left')
+            ->where('messages.conversation_id', $conversationId)
+            ->orderBy('messages.created_at', 'ASC')
+            ->findAll();
+        
+        $recipientId = ($conversation['user1_id'] == $userId) ? $conversation['user2_id'] : $conversation['user1_id'];
+        $recipient = $this->userModel->select('id, full_name')->find($recipientId);
+
+        return $this->response->setJSON(['messages' => $messages, 'recipient' => $recipient]);
+    }
+
+    public function sendMessage($conversationId)
+    {
+        if (!$this->request->isAJAX()) { return $this->response->setStatusCode(403); }
+        $userId = session()->get('user_id');
+        $messageText = $this->request->getPost('message');
+        if (empty(trim($messageText))) { return $this->response->setJSON(['error' => 'Message cannot be empty.'])->setStatusCode(400); }
+        $conversation = $this->conversationModel->find($conversationId);
+        if (!$conversation || ($conversation['user1_id'] != $userId && $conversation['user2_id'] != $userId)) { return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(403); }
+        $this->messageModel->insert(['conversation_id' => $conversationId, 'sender_id' => $userId, 'message' => esc($messageText)]);
+        $this->conversationModel->update($conversationId, ['updated_at' => date('Y-m-d H:i:s')]);
         return $this->response->setJSON(['success' => true, 'message' => 'Message sent.']);
+    }
+
+    /**
+     * (DIPERBAIKI) Memulai chat dari penjual ke pembeli via AJAX, mengembalikan JSON.
+     */
+    public function startChatFromOrder($orderId)
+    {
+        // Pastikan ini adalah request AJAX
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403, 'Invalid request type.');
+        }
+
+        $sellerId = session()->get('user_id');
+        if (!$sellerId) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Sesi tidak valid.'])->setStatusCode(401);
+        }
+        
+        $orderModel = new \App\Models\OrderModel();
+        $order = $orderModel->find($orderId);
+
+        if (!$order || $order['store_id'] != session()->get('store_id')) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Pesanan tidak valid.'])->setStatusCode(403);
+        }
+
+        $buyerId = $order['user_id'];
+        
+        $conversation = $this->conversationModel->findConversation($buyerId, $sellerId);
+        $conversationId = $conversation ? $conversation['id'] : $this->conversationModel->insert(['user1_id' => $buyerId, 'user2_id' => $sellerId]);
+
+        $contextMessage = "Halo, ini mengenai pesanan Anda dengan no. invoice: " . $order['invoice_number'];
+        
+        // Cek apakah pesan konteks sudah ada untuk menghindari duplikat
+        $existingMessage = $this->messageModel->where(['conversation_id' => $conversationId, 'message' => $contextMessage])->first();
+        if (!$existingMessage) {
+            $this->messageModel->insert([
+                'conversation_id' => $conversationId,
+                'sender_id'       => $sellerId,
+                'message'         => $contextMessage,
+            ]);
+            $this->conversationModel->update($conversationId, ['updated_at' => date('Y-m-d H:i:s')]);
+        }
+        
+        // Kembalikan response JSON berisi ID percakapan
+        return $this->response->setJSON(['success' => true, 'conversation_id' => $conversationId]);
     }
 }

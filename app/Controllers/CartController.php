@@ -109,4 +109,27 @@ class CartController extends BaseController
 
         return redirect()->to('/cart');
     }
+
+    /**
+     * Removes multiple items from the cart based on selection.
+     */
+    public function removeBatch()
+    {
+        $userId = session()->get('user_id');
+        $cartIds = $this->request->getPost('cart_items');
+
+        if (empty($cartIds) || !is_array($cartIds)) {
+            session()->setFlashdata('error', 'Tidak ada produk yang dipilih untuk dihapus.');
+            return redirect()->to('/cart');
+        }
+
+        // Ensure the user owns these cart items before deleting
+        $this->cartModel
+            ->where('user_id', $userId)
+            ->whereIn('id', $cartIds)
+            ->delete();
+
+        session()->setFlashdata('success', 'Produk yang dipilih telah berhasil dihapus dari keranjang.');
+        return redirect()->to('/cart');
+    }
 }

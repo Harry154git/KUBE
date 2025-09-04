@@ -7,11 +7,10 @@
 <?= $this->section('content') ?>
 <div class="container my-5">
     <div class="d-flex align-items-center mb-4">
-        <a href="/cart" class="btn btn-link p-0 me-3"><i class="bi bi-arrow-left fs-4"></i></a>
-        <h2 class="mb-0">Checkout</h2>
+        <a href="/cart" class="btn btn-link p-0 me-3 text-decoration-none" style="color: var(--purun-dark-green);"><i class="bi bi-arrow-left fs-3"></i></a>
+        <h2 class="mb-0 checkout-header">Checkout</h2>
     </div>
 
-    <!-- Error Notification -->
     <?php if (session()->getFlashdata('error')): ?>
         <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
     <?php endif; ?>
@@ -19,114 +18,102 @@
     <form action="/checkout/process" method="post">
         <?= csrf_field() ?>
         <div class="row">
-            <!-- Left Column: Address, Shipping, Notes -->
             <div class="col-lg-7">
-                <!-- 1. Shipping Address -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-geo-alt-fill me-2"></i>Shipping Address</h5>
-                    </div>
+                <div class="checkout-card">
+                    <div class="card-header"><h5 class="mb-0"><i class="bi bi-geo-alt-fill me-2"></i>Alamat Pengiriman</h5></div>
                     <div class="card-body">
                         <?php if (empty($addresses)): ?>
-                            <p>You don't have an address yet. <a href="/addresses">Add an Address</a></p>
+                            <p>Anda belum memiliki alamat. <a href="/addresses">Tambah Alamat</a></p>
                         <?php else: ?>
                             <?php foreach ($addresses as $address): ?>
-                                <div class="form-check mb-3">
+                                <div class="choice-option mb-3">
                                     <input class="form-check-input" type="radio" name="address_id" id="address<?= $address['id'] ?>" value="<?= $address['id'] ?>" <?= $address['is_primary'] ? 'checked' : '' ?> required>
                                     <label class="form-check-label" for="address<?= $address['id'] ?>">
                                         <strong><?= esc($address['label']) ?></strong> (<?= esc($address['recipient_name']) ?>)
-                                        <p class="mb-0 text-muted"><?= esc($address['address']) ?>, <?= esc($address['city']) ?>, <?= esc($address['province']) ?>, <?= esc($address['postal_code']) ?> | <?= esc($address['phone_number']) ?></p>
+                                        <p class="mb-0 text-muted small"><?= esc($address['address']) ?>, <?= esc($address['city']) ?>, <?= esc($address['province']) ?> | <?= esc($address['phone_number']) ?></p>
                                     </label>
                                 </div>
                             <?php endforeach; ?>
-                            <a href="/addresses" class="btn btn-outline-primary btn-sm mt-2">Manage Addresses</a>
+                            <a href="/addresses" class="btn btn-outline-secondary btn-sm mt-2">Kelola Alamat</a>
                         <?php endif; ?>
                     </div>
                 </div>
 
-                <!-- 2. Shipping Options -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header"><h5 class="mb-0"><i class="bi bi-truck me-2"></i>Shipping Options</h5></div>
-                    <div class="card-body">
-                        <div class="form-check">
-                            <input class="form-check-input shipping-option" type="radio" name="shipping_method" id="shippingReguler" value="Reguler" data-cost="15000" checked required>
-                            <label class="form-check-label d-flex justify-content-between" for="shippingReguler">
-                                <span>Reguler (Est. 3-5 days)</span>
-                                <span>Rp 15.000</span>
-                            </label>
-                        </div>
-                        <hr>
-                        <div class="form-check">
-                            <input class="form-check-input shipping-option" type="radio" name="shipping_method" id="shippingExpress" value="Express" data-cost="25000" required>
-                            <label class="form-check-label d-flex justify-content-between" for="shippingExpress">
-                                <span>Express (Est. 1-2 days)</span>
-                                <span>Rp 25.000</span>
-                            </label>
-                        </div>
+                <?php foreach($groupedItems as $storeId => $store): ?>
+                <div class="checkout-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-shop me-2"></i>Pesanan dari <?= esc($store['store_name']) ?? 'Toko Tanpa Nama' ?></h5>
                     </div>
-                </div>
-
-                <!-- 3. Message for Seller -->
-                <div class="card shadow-sm">
-                    <div class="card-header"><h5 class="mb-0"><i class="bi bi-chat-left-text-fill me-2"></i>Message (Optional)</h5></div>
                     <div class="card-body">
-                        <textarea name="seller_notes" class="form-control" rows="2" placeholder="Leave a message for the seller..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Summary & Payment -->
-            <div class="col-lg-5 mt-4 mt-lg-0">
-                <div class="card shadow-sm sticky-top" style="top: 1rem;">
-                    <div class="card-header"><h5 class="mb-0"><i class="bi bi-receipt-cutoff me-2"></i>Order Summary</h5></div>
-                    <div class="card-body">
-                        <!-- Item list grouped by store -->
-                        <?php foreach($groupedItems as $store): ?>
-                            <div class="mb-3">
-                                <strong>From: <a href="#" class="text-decoration-none"><?= esc($store['store_name']) ?? 'Unnamed Store' ?></a></strong>
-                                <?php foreach($store['items'] as $item): ?>
-                                <div class="d-flex justify-content-between align-items-center my-2">
-                                    <div class="d-flex align-items-center">
-                                        <img src="/uploads/products/<?= esc($item['product_image']) ?>" width="40" class="me-2 rounded" onerror="this.onerror=null;this.src='https://placehold.co/40x40/CCCCCC/333333?text=Img';">
-                                        <span><?= esc($item['product_name']) ?> <small>(x<?= $item['quantity'] ?>)</small></span>
-                                    </div>
-                                    <span>Rp <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?></span>
+                        <?php foreach($store['items'] as $item): ?>
+                            <div class="checkout-product-item mb-3">
+                                <img src="/uploads/products/<?= esc($item['product_image']) ?>" onerror="this.onerror=null;this.src='<?= base_url('images/produk-placeholder.jpg') ?>';">
+                                <div>
+                                    <div class="fw-bold"><?= esc($item['product_name']) ?></div>
+                                    <div class="text-muted small"><?= $item['quantity'] ?> barang x Rp <?= number_format($item['price'], 0, ',', '.') ?></div>
                                 </div>
-                                <?php endforeach; ?>
+                                <div class="ms-auto fw-bold">Rp <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?></div>
                             </div>
                         <?php endforeach; ?>
                         
                         <hr>
-                        <!-- Cost Breakdown -->
-                        <div class="d-flex justify-content-between">
-                            <span>Subtotal</span>
+                        <h6 class="mb-3">Opsi Pengiriman</h6>
+                        <div class="choice-option mb-3">
+                             <input class="form-check-input shipping-option" type="radio" name="shipping_method[<?= $storeId ?>]" id="shippingReguler<?= $storeId ?>" value="Reguler" data-cost="15000" checked required>
+                             <label class="form-check-label d-flex justify-content-between" for="shippingReguler<?= $storeId ?>">
+                                 <span>Reguler (Estimasi 3-5 hari)</span>
+                                 <span>Rp 15.000</span>
+                             </label>
+                        </div>
+                        <div class="choice-option">
+                             <input class="form-check-input shipping-option" type="radio" name="shipping_method[<?= $storeId ?>]" id="shippingExpress<?= $storeId ?>" value="Express" data-cost="25000" required>
+                             <label class="form-check-label d-flex justify-content-between" for="shippingExpress<?= $storeId ?>">
+                                 <span>Express (Estimasi 1-2 hari)</span>
+                                 <span>Rp 25.000</span>
+                             </label>
+                        </div>
+                        
+                        <hr>
+                        <h6 class="mb-2">Catatan untuk Penjual (Opsional)</h6>
+                        <textarea name="seller_notes[<?= $storeId ?>]" class="form-control" rows="2" placeholder="Tinggalkan pesan untuk penjual ini..."></textarea>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="col-lg-5 mt-4 mt-lg-0">
+                <div class="card summary-card sticky-top">
+                    <div class="card-header"><h5 class="mb-0"><i class="bi bi-receipt-cutoff me-2"></i>Ringkasan Pembayaran</h5></div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal Produk</span>
                             <span>Rp <?= number_format($subtotal, 0, ',', '.') ?></span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Shipping Cost</span>
-                            <span id="shippingCostText">Rp 15.000</span>
+                            <span>Total Ongkos Kirim</span>
+                            <span id="shippingCostText">Rp 0</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between fw-bold fs-5">
-                            <span>Total Payment</span>
-                            <span id="grandTotalText">Rp <?= number_format($subtotal + 15000, 0, ',', '.') ?></span>
+                            <span>Total Pembayaran</span>
+                            <span id="grandTotalText">Rp 0</span>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <h6 class="mb-2">Payment Method</h6>
+                        <h6 class="mb-3">Metode Pembayaran</h6>
                         <select name="payment_method" class="form-select" required>
                             <option value="QRIS" selected>QRIS (Scan QR Code)</option>
-                            <option value="COD" disabled>Cash on Delivery (Coming Soon)</option>
+                            <option value="COD" disabled>Bayar di Tempat (Segera Hadir)</option>
                         </select>
                         <div class="form-check mt-3">
                             <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
-                            <label class="form-check-label" for="terms">
-                                I agree to the <a href="#">Terms & Conditions</a>.
+                            <label class="form-check-label small" for="terms">
+                                Saya menyetujui <a href="#">Syarat & Ketentuan</a> yang berlaku.
                             </label>
                         </div>
                         <div class="d-grid mt-3">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-shield-check-fill me-2"></i>Create Order
+                            <button type="submit" class="btn btn-purun-secondary btn-lg">
+                                <i class="bi bi-shield-check-fill me-2"></i>Buat Pesanan
                             </button>
                         </div>
                     </div>
@@ -149,15 +136,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     }
 
-    shippingOptions.forEach(option => {
-        option.addEventListener('change', function() {
-            const shippingCost = parseFloat(this.dataset.cost);
-            const grandTotal = subtotal + shippingCost;
-
-            shippingCostText.textContent = formatCurrency(shippingCost);
-            grandTotalText.textContent = formatCurrency(grandTotal);
+    function calculateTotal() {
+        let totalShippingCost = 0;
+        // Loop setiap grup opsi pengiriman
+        document.querySelectorAll('.checkout-card').forEach(card => {
+            const checkedShipping = card.querySelector('.shipping-option:checked');
+            if (checkedShipping) {
+                totalShippingCost += parseFloat(checkedShipping.dataset.cost);
+            }
         });
+
+        const grandTotal = subtotal + totalShippingCost;
+        shippingCostText.textContent = formatCurrency(totalShippingCost);
+        grandTotalText.textContent = formatCurrency(grandTotal);
+    }
+
+    shippingOptions.forEach(option => {
+        option.addEventListener('change', calculateTotal);
     });
+
+    // Kalkulasi awal saat halaman dimuat
+    calculateTotal();
 });
 </script>
 <?= $this->endSection() ?>

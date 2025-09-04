@@ -66,4 +66,56 @@ class OrderController extends BaseController
 
         return view('orders/track', $data);
     }
+
+    public function confirmPayment()
+    {
+        $orderId = $this->request->getPost('order_id');
+        $userId = session()->get('user_id');
+
+        $orderModel = new OrderModel();
+        
+        // Security check: Find the order, ensure it belongs to the user, and is pending payment
+        $order = $orderModel->where('id', $orderId)
+                            ->where('user_id', $userId)
+                            ->where('status', 'pending_payment')
+                            ->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Pesanan tidak valid atau sudah dibayar.');
+        }
+
+        // Update status to 'processing'
+        $orderModel->update($orderId, ['status' => 'processing']);
+
+        return redirect()->to('order/track/' . $order['invoice_number'])
+                         ->with('success', 'Pembayaran Anda sedang diverifikasi. Penjual akan segera memproses pesanan Anda.');
+    }
+
+    /**
+     * (BARU) Menangani aksi pelanggan saat mengonfirmasi pesanan telah diterima.
+     * Mengubah status pesanan dari 'shipped' menjadi 'completed'.
+     */
+    public function receiveOrder()
+    {
+        $orderId = $this->request->getPost('order_id');
+        $userId = session()->get('user_id');
+
+        $orderModel = new \App\Models\OrderModel();
+
+        // Validasi: Cari pesanan, pastikan milik pengguna, dan statusnya 'shipped'
+        $order = $orderModel->where('id', $orderId)
+                            ->where('user_id', $userId)
+                            ->where('status', 'shipped')
+                            ->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Pesanan tidak valid atau belum dikirim.');
+        }
+
+        // Jika valid, ubah status menjadi 'completed'
+        $orderModel->update($orderId, ['status' => 'completed']);
+
+        return redirect()->to('order/track/' . $order['invoice_number'])
+                         ->with('success', 'Terima kasih telah berbelanja! Pesanan Anda telah selesai.');
+    }
 }

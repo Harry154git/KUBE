@@ -1,7 +1,6 @@
 <?php if (session()->has('errors')): ?>
     <div class="alert alert-danger">
-        <p class="mb-0">Terdapat kesalahan pada input Anda:</p>
-        <ul>
+        <ul class="mb-0">
             <?php foreach (session('errors') as $error) : ?>
                 <li><?= esc($error) ?></li>
             <?php endforeach ?>
@@ -25,7 +24,7 @@
 </div>
 <div class="mb-3">
     <label for="address" class="form-label">Alamat Lengkap</label>
-    <textarea class="form-control" name="address" rows="3" required><?= old('address', $address['address'] ?? '') ?></textarea>
+    <textarea class="form-control" name="address" rows="3" placeholder="Tulis nama jalan, nomor rumah, RT/RW..." required><?= old('address', $address['address'] ?? '') ?></textarea>
 </div>
 <div class="row">
      <div class="col-md-6 mb-3">

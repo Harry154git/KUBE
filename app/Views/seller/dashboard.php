@@ -1,37 +1,47 @@
-<?= $this->extend('layouts/main_layout') ?>
+<?= $this->extend('layouts/seller_layout') ?>
 
 <?= $this->section('title') ?>
-Seller Dashboard - <?= esc(session()->get('store_name')) ?>
+    Dasbor Penjual - <?= esc(session()->get('store_name')) ?>
 <?= $this->endSection() ?>
 
-<?= $this->section('content') ?>
-<div class="container my-4">
-    <h2 class="mb-4">Seller Dashboard</h2>
+<?php $this->setVar('activePage', 'dashboard'); ?>
+
+<?= $this->section('seller_content') ?>
+    <h2 class="mb-4 seller-header">Dasbor</h2>
 
     <?php if(session()->getFlashdata('message')): ?>
         <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>
     <?php endif; ?>
 
-    <div class="row">
-        <!-- Seller Navigation Menu -->
-        <div class="col-md-3">
-            <div class="list-group">
-                <a href="<?= route_to('seller.dashboard') ?>" class="list-group-item list-group-item-action active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                <a href="<?= route_to('seller.products') ?>" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i>My Products</a>
-                <a href="<?= route_to('seller.orders') ?>" class="list-group-item list-group-item-action"><i class="bi bi-receipt me-2"></i>Incoming Orders</a>
-                <a href="<?= route_to('seller.settings') ?>" class="list-group-item list-group-item-action"><i class="bi bi-gear me-2"></i>Store Settings</a>
-            </div>
-        </div>
-        <!-- Main Dashboard Content -->
-        <div class="col-md-9">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Welcome, <?= esc(session()->get('full_name')) ?>!</h5>
-                    <p class="card-text">You are now in the dashboard for store <strong><?= esc(session()->get('store_name')) ?></strong>. Use the side menu to manage your store.</p>
-                    <!-- You can add sales statistics, new orders, etc. here -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="stat-card stat-card-orders">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase small">Pesanan Perlu Diproses</div>
+                        <div class="stat-number"><?= esc($newOrders) ?></div> 
+                    </div>
+                    <i class="bi bi-receipt stat-icon"></i>
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+             <div class="stat-card stat-card-products">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase small">Total Produk Anda</div>
+                        <div class="stat-number"><?= esc($totalProducts) ?></div>
+                    </div>
+                    <i class="bi bi-box-seam stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <div class="card seller-card">
+        <div class="card-body">
+            <h5 class="card-title">Selamat datang, <?= esc(session()->get('full_name')) ?>!</h5>
+            <p class="card-text text-muted">Anda berada di dasbor untuk toko <strong><?= esc(session()->get('store_name')) ?></strong>. Gunakan menu di samping untuk mengelola toko Anda.</p>
+        </div>
     </div>
-</div>
 <?= $this->endSection() ?>

@@ -1,86 +1,65 @@
-<?= $this->extend('layouts/main_layout') ?>
+<?= $this->extend('layouts/seller_layout') ?>
 
 <?= $this->section('title') ?>
-Incoming Orders - <?= esc(session()->get('store_name')) ?>
+    Pesanan Masuk - <?= esc(session()->get('store_name')) ?>
 <?= $this->endSection() ?>
 
-<?= $this->section('content') ?>
-<div class="container my-4">
-    <div class="row">
-        <!-- Seller Navigation Menu -->
-        <div class="col-md-3">
-            <div class="list-group">
-                <a href="<?= route_to('seller.dashboard') ?>" class="list-group-item list-group-item-action"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                <a href="<?= route_to('seller.products') ?>" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i>My Products</a>
-                <a href="<?= route_to('seller.orders') ?>" class="list-group-item list-group-item-action active"><i class="bi bi-receipt me-2"></i>Incoming Orders</a>
-                <a href="<?= route_to('seller.settings') ?>" class="list-group-item list-group-item-action"><i class="bi bi-gear me-2"></i>Store Settings</a>
-            </div>
-        </div>
-        <!-- Order Content -->
-        <div class="col-md-9">
-            <h3>Incoming Orders</h3>
-            <?php if(session()->getFlashdata('message')): ?>
-                <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>
-            <?php endif; ?>
-            <?php if(session()->getFlashdata('error')): ?>
-                <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-            <?php endif; ?>
+<?php $this->setVar('activePage', 'orders'); ?>
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Invoice No.</th>
-                                    <th>Order Date</th>
-                                    <th>Customer Name</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Update Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($orders)): ?>
-                                    <?php foreach ($orders as $order): ?>
-                                    <tr>
-                                        <td><?= esc($order['invoice_number']) ?></td>
-                                        <td><?= date('d M Y H:i', strtotime($order['created_at'])) ?></td>
-                                        <td>
-                                            <!-- Logic to get customer name -->
-                                            <!-- You will need to join with the users table in your controller to get this data -->
-                                            User ID: <?= esc($order['user_id']) ?>
-                                        </td>
-                                        <td>Rp <?= number_format($order['total_amount'], 0, ',', '.') ?></td>
-                                        <td>
-                                            <span class="badge bg-info text-dark"><?= ucfirst($order['status']) ?></span>
-                                        </td>
-                                        <td>
-                                            <form action="<?= route_to('seller.updateOrderStatus') ?>" method="post" class="d-flex">
-                                                <?= csrf_field() ?>
-                                                <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                                                <select name="status" class="form-select form-select-sm me-2">
-                                                    <option value="processing" <?= $order['status'] == 'processing' ? 'selected' : '' ?>>Processing</option>
-                                                    <option value="shipped" <?= $order['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
-                                                    <option value="completed" <?= $order['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
-                                                    <option value="canceled" <?= $order['status'] == 'canceled' ? 'selected' : '' ?>>Canceled</option>
-                                                </select>
-                                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="6" class="text-center">No incoming orders.</td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<?= $this->section('seller_content') ?>
+    <h2 class="mb-4 seller-header">Pesanan Masuk</h2>
+    
+    <?php if(session()->getFlashdata('message')): ?>
+        <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>
+    <?php endif; ?>
+    <?php if(session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+    <?php endif; ?>
+
+    <div class="card seller-card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover">
+                    <thead>
+                        <tr>
+                            <th>No. Invoice</th>
+                            <th>Tanggal</th>
+                            <th>Nama Pelanggan</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($orders)): ?>
+                            <?php foreach ($orders as $order): ?>
+                            <tr>
+                                <td class="fw-bold"><?= esc($order['invoice_number']) ?></td>
+                                <td><?= date('d M Y H:i', strtotime($order['created_at'])) ?></td>
+                                <td><?= esc($order['customer_name']) ?></td>
+                                <td>Rp <?= number_format($order['total_amount'], 0, ',', '.') ?></td>
+                                <td>
+                                    <?php
+                                        $statusClass = 'status-' . strtolower($order['status']);
+                                        $statusText = ucwords(str_replace('_', ' ', $order['status']));
+                                    ?>
+                                    <span class="status-badge <?= $statusClass ?>"><?= esc($statusText) ?></span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="<?= route_to('seller.orders.detail', $order['id']) ?>" class="btn btn-sm btn-outline-secondary">
+                                        Lihat Detail
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">Belum ada pesanan yang masuk.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
 <?= $this->endSection() ?>

@@ -57,7 +57,7 @@ class ProductController extends BaseController
             'title' => 'Add New Product',
             'validation' => \Config\Services::validation()
         ];
-        return view('seller/products_add', $data);
+        return view('seller/product_form', $data);
     }
 
     /**
@@ -122,7 +122,7 @@ class ProductController extends BaseController
             'validation' => \Config\Services::validation()
         ];
 
-        return view('seller/products_edit', $data);
+        return view('seller/product_form', $data);
     }
 
     /**

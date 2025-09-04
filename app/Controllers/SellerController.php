@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use App\Models\ProductModel; 
 use App\Models\OrderModel; // Gunakan OrderModel, bukan OrderDetailModel
 use App\Models\OrderDetailModel;
+use App\Models\AddressModel;
 
 class SellerController extends BaseController
 {
@@ -92,13 +93,24 @@ class SellerController extends BaseController
     {
         // Ensure only sellers can access
         if (!session()->get('is_seller')) {
-            return redirect()->to('/home')->with('error', 'You are not a seller.');
+            return redirect()->to('/home')->with('error', 'Anda bukan seorang penjual.');
         }
         
-        // You can add logic for statistics here
+        $storeId = session()->get('store_id');
+
+        // (BARU) Ambil data statistik dari database
+        $totalProducts = $this->productModel->where('store_id', $storeId)->countAllResults();
+        
+        $newOrders = $this->orderModel->where('store_id', $storeId)
+                                      ->where('status', 'processing') // Hanya hitung pesanan yang perlu diproses
+                                      ->countAllResults();
+
         $data = [
-            'title' => 'Seller Dashboard',
+            'title' => 'Dasbor Penjual',
+            'totalProducts' => $totalProducts,
+            'newOrders' => $newOrders,
         ];
+
         return view('seller/dashboard', $data);
     }
 
@@ -125,13 +137,80 @@ class SellerController extends BaseController
     {
         if (!session()->get('is_seller')) return redirect()->to('/home');
         
-        $storeId = session()->get('store_id'); // Mengubah 'toko_id'
+        $storeId = session()->get('store_id');
+        $orders = $this->orderModel
+            ->select('orders.*, users.full_name as customer_name')
+            ->join('users', 'users.id = orders.user_id')
+            ->where('orders.store_id', $storeId)
+            ->orderBy('orders.created_at', 'DESC')
+            ->findAll();
+
         $data = [
-            'title' => 'Incoming Orders',
-            // Gunakan OrderModel untuk mengambil pesanan yang terkait dengan toko ini
-            'orders' => $this->orderModel->where('store_id', $storeId)->findAll() // Mengubah dari OrderDetailModel
+            'title' => 'Pesanan Masuk',
+            'orders' => $orders
         ];
         return view('seller/orders', $data);
+    }
+
+    /**
+     * (BARU) Menampilkan halaman detail untuk satu pesanan.
+     */
+    public function orderDetail($orderId)
+    {
+        if (!session()->get('is_seller')) return redirect()->to('/home');
+        $storeId = session()->get('store_id');
+
+        // Ambil data order utama dan pastikan milik toko ini
+        $order = $this->orderModel
+            ->select('orders.*, users.full_name as customer_name')
+            ->join('users', 'users.id = orders.user_id')
+            ->where('orders.id', $orderId)
+            ->where('orders.store_id', $storeId)
+            ->first();
+
+        if (!$order) {
+            return redirect()->to(route_to('seller.orders'))->with('error', 'Pesanan tidak ditemukan.');
+        }
+
+        // Ambil detail item dalam pesanan
+        $orderDetails = $this->orderDetailModel
+            ->select('order_details.*, p.product_name, p.product_image')
+            ->join('products p', 'p.id = order_details.product_id')
+            ->where('order_details.order_id', $orderId)
+            ->findAll();
+
+        // Ambil alamat pengiriman
+        $addressModel = new AddressModel();
+        $shippingAddress = $addressModel->find($order['shipping_address_id']);
+
+        $data = [
+            'title' => 'Detail Pesanan',
+            'order' => $order,
+            'orderDetails' => $orderDetails,
+            'shippingAddress' => $shippingAddress,
+        ];
+        return view('seller/order_detail', $data);
+    }
+
+    /**
+     * (BARU) Memproses aksi "Kirim Pesanan".
+     */
+    public function shipOrder()
+    {
+        if (!session()->get('is_seller')) return redirect()->to('/home');
+        
+        $orderId = $this->request->getPost('order_id');
+        $storeId = session()->get('store_id');
+        
+        // Validasi: pastikan pesanan ada dan milik toko ini
+        $order = $this->orderModel->where('id', $orderId)->where('store_id', $storeId)->first();
+        if ($order) {
+            $this->orderModel->update($orderId, ['status' => 'shipped']);
+            return redirect()->to(route_to('seller.orders.detail', $orderId))
+                             ->with('message', 'Status pesanan berhasil diubah menjadi "Dikirim".');
+        }
+
+        return redirect()->to(route_to('seller.orders'))->with('error', 'Gagal memperbarui status pesanan.');
     }
 
     /**
@@ -158,6 +237,39 @@ class SellerController extends BaseController
         }
 
         return redirect()->to(route_to('seller.orders'))->with('error', 'Failed to update order status. Order not found or not owned by your store.');
+    }
+
+    /**
+     * Displays the form to add a new product.
+     */
+    public function add()
+    {
+        $data = [
+            'title' => 'Tambah Produk Baru',
+        ];
+        // Panggil file form yang sama, tanpa data 'product'
+        return view('seller/product_form', $data);
+    }
+
+    /**
+     * Displays the form to edit an existing product.
+     */
+    public function edit($id)
+    {
+        $product = $this->productModel->find($id);
+
+        // Security check: ensure the product belongs to the seller
+        if (!$product || $product['store_id'] != session()->get('store_id')) {
+            return redirect()->to(route_to('seller.products'))->with('error', 'Produk tidak ditemukan atau Anda tidak berhak mengaksesnya.');
+        }
+
+        $data = [
+            'title' => 'Edit Produk',
+            'product' => $product // Kirim data produk yang akan diedit
+        ];
+        
+        // Panggil file form yang sama, dengan mengirimkan data 'product'
+        return view('seller/product_form', $data);
     }
 
     /**
@@ -207,5 +319,51 @@ class SellerController extends BaseController
             'store' => $store
         ];
         return view('seller/settings', $data);
+    }
+
+    public function cancelOrder()
+    {
+        $orderId = $this->request->getPost('order_id');
+        $storeId = session()->get('store_id');
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            // Validasi: pastikan pesanan ada dan milik toko ini
+            $order = $this->orderModel
+                ->where('id', $orderId)
+                ->where('store_id', $storeId)
+                ->first();
+
+            if (!$order) {
+                throw new \Exception('Pesanan tidak valid untuk dibatalkan.');
+            }
+
+            // Ambil semua item di dalam pesanan
+            $orderDetails = $this->orderDetailModel->where('order_id', $orderId)->findAll();
+
+            // Kembalikan stok untuk setiap produk
+            foreach ($orderDetails as $item) {
+                $this->productModel->where('id', $item['product_id'])->increment('stock', (int)$item['quantity']);
+            }
+
+            // Ubah status pesanan menjadi 'canceled'
+            $this->orderModel->update($orderId, ['status' => 'canceled']);
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                 throw new \Exception('Transaksi database untuk pembatalan gagal.');
+            }
+
+            return redirect()->to(route_to('seller.orders.detail', $orderId))
+                             ->with('message', 'Pesanan telah berhasil dibatalkan dan stok produk telah dikembalikan.');
+
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', '[SellerController] ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal membatalkan pesanan: ' . $e->getMessage());
+        }
     }
 }

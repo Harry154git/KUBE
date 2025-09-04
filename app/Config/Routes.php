@@ -53,6 +53,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->post('cart/add', 'CartController::add');
     $routes->post('cart/update', 'CartController::update');
     $routes->get('cart/remove/(:num)', 'CartController::remove/$1');
+    $routes->post('cart/remove-batch', 'CartController::removeBatch', ['as' => 'cart.remove_batch']);
 
     // User Profile & Settings Routes
     $routes->get('profile', 'UserController::profile');
@@ -61,6 +62,8 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     // --- NEW ROUTES FOR ORDER HISTORY & TRACKING ---
     $routes->get('order/history', 'OrderController::history'); // Mengubah 'order-history'
     $routes->get('order/track/(:segment)', 'OrderController::track/$1');
+    $routes->post('order/confirm-payment', 'OrderController::confirmPayment', ['as' => 'order.confirm_payment']);
+    $routes->post('order/receive', 'OrderController::receiveOrder', ['as' => 'order.receive']);
     // --- END OF NEW ROUTES ---
 
     // --- NEW ROUTES FOR ADDRESS MANAGEMENT ---
@@ -83,6 +86,10 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('chat/messages/(:num)', 'ChatController::getMessages/$1');
     $routes->post('chat/send/(:num)', 'ChatController::sendMessage/$1');
     $routes->get('chat/start/store/(:num)', 'ChatController::startWithSeller/$1', ['as' => 'chat.start_with_seller']); // Mengubah 'toko'
+    $routes->get('chat/order/(:num)', 'ChatController::startChatFromOrder/$1', ['as' => 'chat.from_order']);
+
+    // Route baru untuk memulai chat dari halaman produk
+    $routes->get('chat/ask/(:num)/(:num)', 'ChatController::startChatFromProduct/$1/$2', ['as' => 'chat.from_product']);
     // --- END OF CHAT ROUTES ---
 
     // --- SELLER ROUTES ---
@@ -95,6 +102,12 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
         $routes->get('orders', 'SellerController::orders', ['as' => 'seller.orders']);
         $routes->post('orders/update-status', 'SellerController::updateOrderStatus', ['as' => 'seller.updateOrderStatus']);
         $routes->match(['get', 'post'], 'settings', 'SellerController::settings', ['as' => 'seller.settings']);
+        // (BARU) Route untuk melihat detail pesanan
+        $routes->get('orders/detail/(:num)', 'SellerController::orderDetail/$1', ['as' => 'seller.orders.detail']);
+        // (BARU) Route untuk memproses pengiriman pesanan
+        $routes->post('orders/ship', 'SellerController::shipOrder', ['as' => 'seller.orders.ship']);
+        // app/Config/Routes.php (di dalam grup seller)
+        $routes->post('orders/cancel', 'SellerController::cancelOrder', ['as' => 'seller.orders.cancel']);
 
         // --- SELLER PRODUCT MANAGEMENT ROUTES ---
         $routes->get('products', 'SellerController::products', ['as' => 'seller.products']);

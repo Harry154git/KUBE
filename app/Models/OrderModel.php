@@ -20,7 +20,8 @@ class OrderModel extends Model
         'shipping_cost',
         'status',
         'shipping_method',  // <-- TAMBAHKAN INI
-        'payment_method'    // <-- TAMBAHKAN INI
+        'payment_method',   // <-- TAMBAHKAN INI
+        'seller_notes'
     ];
 
     protected $useTimestamps = true;
