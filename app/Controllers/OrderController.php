@@ -30,6 +30,7 @@ class OrderController extends BaseController
 
     /**
      * Displays the detail and tracking page for an order.
+     * Menampilkan detail pesanan berdasarkan nomor invoice, dengan keamanan tambahan untuk memastikan pengguna hanya dapat melihat pesanan mereka sendiri.
      */
     public function track($invoiceNumber)
     {
