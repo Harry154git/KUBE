@@ -1,0 +1,18 @@
+.order-item-preview img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+/* Modal Pembayaran QRIS */
+.qris-modal-body {
+    text-align: center;
+}
+.qris-modal-body img {
+    max-width: 250px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 5px;
+}

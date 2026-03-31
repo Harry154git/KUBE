@@ -1,0 +1,138 @@
+.floating-chat-btn { 
+    position: fixed; bottom: 20px; right: 20px; width: 150px; height: 60px; 
+    background-color: var(--purun-primary); color: white; border-radius: 30px; 
+    display: flex; justify-content: center; align-items: center; 
+    font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); 
+    z-index: 1040; gap: 8px; font-weight: 500; transition: background-color 0.3s;
+}
+
+.floating-chat-btn:hover {
+    background-color: var(--purun-dark-green);
+}
+
+.floating-chat-btn .chat-text {
+    font-size: 1rem;
+}
+
+.chat-container { 
+    display: none; position: fixed; bottom: 20px; right: 20px; 
+    width: 700px; max-width: 90vw; height: 500px; max-height: 80vh; 
+    background-color: white; border-radius: 15px; 
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2); 
+    z-index: 1050; overflow: hidden; flex-direction: column; 
+}
+
+.chat-container.open { 
+    display: flex; 
+}
+
+.chat-header { 
+    background-color: var(--purun-primary); color: white; padding: 10px 15px; 
+    font-weight: bold; display: flex; justify-content: space-between; align-items: center; 
+}
+
+.chat-body { 
+    display: flex; flex-grow: 1; overflow: hidden; 
+}
+
+.conversations-list { 
+    width: 35%; border-right: 1px solid #dee2e6; overflow-y: auto; 
+    padding: 0; margin: 0; list-style: none; 
+}
+
+.conversation-item { 
+    padding: 15px; cursor: pointer; border-bottom: 1px solid #f1f1f1; 
+    display: flex; justify-content: space-between; align-items: center; 
+}
+
+.conversation-item:hover { 
+    background-color: #f8f9fa; 
+}
+
+.conversation-item.active { 
+    background-color: #e9ecef; 
+}
+
+.conversation-item .name { 
+    font-weight: bold; 
+}
+
+.conversation-item .last-message { 
+    font-size: 0.85em; color: #6c757d; white-space: nowrap; 
+    overflow: hidden; text-overflow: ellipsis; max-width: 150px; 
+}
+
+.unread-badge { 
+    background-color: var(--purun-maroon); color: white; font-size: 0.7em; 
+    padding: 2px 6px; border-radius: 50%; 
+}
+
+.message-window { 
+    width: 65%; display: flex; flex-direction: column; 
+}
+
+.message-header { 
+    padding: 10px 15px; border-bottom: 1px solid #dee2e6; font-weight: bold; 
+}
+
+.message-area { 
+    flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; 
+}
+
+.message { 
+    max-width: 70%; padding: 8px 12px; border-radius: 18px; 
+    margin-bottom: 10px; word-wrap: break-word; 
+}
+
+.message.sent { 
+    background-color: var(--purun-dark-green); color: white; 
+    align-self: flex-end; border-bottom-right-radius: 4px; 
+}
+
+.message.received { 
+    background-color: #e9ecef; color: #212529; 
+    align-self: flex-start; border-bottom-left-radius: 4px; 
+}
+
+.message-input-area { 
+    border-top: 1px solid #dee2e6; padding: 10px; 
+}
+
+.message-input-area .btn-primary { 
+    background-color: var(--purun-dark-green); 
+    border-color: var(--purun-dark-green); 
+}
+
+.message.product-inquiry {
+    padding: 10px;
+    max-width: 280px;
+}
+.message.product-inquiry a {
+    text-decoration: none;
+    color: inherit;
+}
+.product-inquiry-content {
+    display: flex;
+    gap: 10px;
+}
+.product-inquiry-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+.product-inquiry-details .name {
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.9rem;
+}
+.product-inquiry-details .price {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85); 
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+}
+.message.product-inquiry.received .price {
+    color: var(--purun-maroon);
+}

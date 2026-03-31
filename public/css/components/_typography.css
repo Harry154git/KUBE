@@ -1,0 +1,14 @@
+.page-header {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    color: var(--purun-dark-green);
+}
+.page-header strong {
+    color: var(--purun-maroon);
+}
+
+.seller-header {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    color: var(--purun-dark-green);
+}

@@ -1,0 +1,11 @@
+.table-hover tbody tr:hover {
+    background-color: #fdfaf4;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--purun-dark-green);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}

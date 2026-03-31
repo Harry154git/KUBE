@@ -1,0 +1,89 @@
+.hero-section {
+    background-image: linear-gradient(rgba(45, 61, 34, 0.7), rgba(45, 61, 34, 0.7)), url('/assets/img/purun-market.jpg');
+    background-size: cover; 
+    background-position: center; 
+    padding: 100px 0; 
+    color: white; 
+    text-align: center;
+}
+
+.hero-section h1 { 
+    font-family: var(--font-brand); 
+    font-size: 3.5rem; 
+    font-weight: 700; 
+}
+
+.hero-section .lead { 
+    font-size: 1.25rem; 
+    max-width: 700px; 
+    margin: 1rem auto; 
+    font-weight: 300; 
+}
+
+.hero-section .greeting { 
+    font-size: 1rem; 
+    color: rgba(255, 255, 255, 0.8); 
+}
+
+.cta-button {
+    background-color: var(--purun-brown); 
+    color: white; 
+    padding: 12px 30px; 
+    border-radius: 50px; 
+    text-decoration: none; 
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cta-button:hover { 
+    background-color: var(--purun-gold); 
+    color: var(--purun-dark-green); 
+    transform: translateY(-2px); 
+}
+
+.mission-section { 
+    padding: 80px 0; 
+}
+
+.mission-section h2 { 
+    font-family: var(--font-brand); 
+    color: var(--purun-maroon); 
+    font-weight: 700; 
+    text-align: center; 
+    margin-bottom: 1rem; 
+}
+
+.mission-section .subtitle { 
+    text-align: center; 
+    font-weight: 300; 
+    font-size: 1.1rem; 
+    max-width: 800px; 
+    margin: 0 auto 3rem auto; 
+}
+
+.mission-section img { 
+    border-radius: 12px; 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); 
+    max-width: 100%; 
+}
+
+.mission-section .story-text { 
+    padding-left: 2rem; 
+}
+
+.mission-section .story-text p { 
+    line-height: 1.8; 
+}
+
+.product-section { 
+    padding: 80px 0; 
+    background-color: #ffffff; 
+}
+
+.section-title { 
+    font-family: var(--font-brand); 
+    font-weight: 700; 
+    color: var(--purun-dark-green); 
+    text-align: center; 
+    margin-bottom: 4rem; 
+}

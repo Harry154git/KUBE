@@ -1,0 +1,65 @@
+.btn-purun-primary,
+.btn-purun-secondary,
+.btn-purun-chat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    border-radius: 50px;
+    padding: 0 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+.btn-purun-primary i,
+.btn-purun-secondary i,
+.btn-purun-chat i {
+    font-size: 1.1rem;
+}
+
+.btn-purun-primary {
+    background-color: var(--purun-dark-green);
+    color: white;
+    border-color: var(--purun-dark-green);
+}
+.btn-purun-primary:hover {
+    background-color: #fff;
+    color: var(--purun-dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-purun-secondary {
+    background-color: var(--purun-brown);
+    color: white;
+    border-color: var(--purun-brown);
+}
+.btn-purun-secondary:hover {
+    background-color: var(--purun-gold);
+    color: var(--purun-dark-green);
+    border-color: var(--purun-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-purun-chat {
+    background-color: #fff;
+    color: var(--purun-dark-green);
+    border-color: #ced4da;
+}
+.btn-purun-chat:hover {
+    background-color: #e9ecef;
+    border-color: var(--purun-dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Tombol Aksi Dasbor Penjual */
+.btn-action-edit {
+    background-color: var(--purun-gold);
+    color: var(--purun-dark-green);
+}
+.btn-action-delete {
+    background-color: var(--purun-maroon);
+    color: white;
+}

@@ -1,49 +1,58 @@
-<nav class="navbar navbar-expand-lg navbar-purun sticky-top">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand d-flex align-items-center" href="/home">
-            <img src="/assets/img/logo-kube.png" alt="KUBE Logo" class="brand-logo me-2">
-            <span class="brand-text">KUBE</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="mainNav">
-            <form class="d-flex mx-auto search-bar-purun" action="/search" method="get">
-                <input class="form-control" type="search" name="q" placeholder="Cari produk anyaman purun..." aria-label="Search">
-                <button class="btn" type="submit"><i class="bi bi-search"></i></button>
-            </form>
-
-            <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-3">
-                <li class="nav-item">
-                    <a class="nav-link icon-link" href="/cart"><i class="bi bi-cart-fill"></i></a>
-                </li>
-
-                <?php if (session()->get('isLoggedIn')): ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-2"></i>
-                            <span class="d-none d-lg-inline"><?= esc(session()->get('full_name')) ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person-lines-fill me-2"></i>Profile</a></li>
-                            <?php if(session()->get('is_seller')): ?>
-                                <li><a class="dropdown-item" href="<?= route_to('seller.dashboard') ?>"><i class="bi bi-shop me-2"></i>Toko Saya</a></li>
-                            <?php else: ?>
-                                <li><a class="dropdown-item" href="<?= route_to('seller.activate') ?>"><i class="bi bi-shop-window me-2"></i>Buka Toko</a></li>
-                            <?php endif; ?>
-                            <li><a class="dropdown-item" href="/order/history"><i class="bi bi-clock-history me-2"></i>Riwayat Pesanan</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                        </ul>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
+<!-- (BARU) Menggunakan struktur dan class dari desain AI -->
+<header class="nav-bar">
+    <!-- Logo dan Nama Brand -->
+    <a href="/home" class="brand-link">
+        <img class="brand-logo-img" alt="Kube Logo" src="/assets/img/logo-kube.png" />
+        <div class="brand-text-wrapper">
+            <h2 class="brand-text">KUBE</h2>
         </div>
+    </a>
+
+    <!-- Form Pencarian -->
+    <div class="search-container">
+        <form action="/search" method="get" class="search-form">
+            <input class="search-input" placeholder="Cari Produk Mu" type="text" name="q" />
+            <button type="submit" class="search-button">
+                <img class="search-icon" alt="Search" src="https://api.iconify.design/material-symbols/search-rounded.svg?color=%23ffffff" />
+            </button>
+        </form>
     </div>
-</nav>
+
+    <!-- Ikon dan Tombol Aksi Pengguna -->
+    <div class="user-actions">
+        <?php if (session()->get('isLoggedIn')): ?>
+            <!-- Ikon Notifikasi dan Keranjang untuk user yang login -->
+            <div class="icon-group">
+                <a href="/notifications" class="icon-link">
+                    <img class="action-icon" alt="Notifications" src="https://api.iconify.design/mingcute/notification-fill.svg?color=%23ffffff" />
+                </a>
+                <a href="/cart" class="icon-link">
+                    <img class="action-icon" alt="Cart" src="https://api.iconify.design/mdi/cart.svg?color=%23ffffff" />
+                </a>
+            </div>
+            
+            <!-- Dropdown Profil Pengguna -->
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="user-name"><?= esc(session()->get('full_name')) ?></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                    <?php if(session()->get('is_seller')): ?>
+                        <li><a class="dropdown-item" href="<?= route_to('seller.dashboard') ?>">Toko Saya</a></li>
+                    <?php else: ?>
+                        <li><a class="dropdown-item" href="<?= route_to('seller.activate') ?>">Buka Toko</a></li>
+                    <?php endif; ?>
+                    <li><a class="dropdown-item" href="/order/history">Riwayat Pesanan</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        <?php else: ?>
+            <!-- Tombol Login/Daftar untuk tamu -->
+            <button class="auth-button requires-auth">
+                <div class="auth-button-text">Login | Daftar</div>
+            </button>
+        <?php endif; ?>
+    </div>
+</header>

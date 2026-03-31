@@ -9,11 +9,12 @@ class HomeController extends BaseController
     public function index()
     {
         $productModel = new ProductModel();
-        $data['products'] = $productModel->findAll();
         
-        // Memuat session untuk mendapatkan nama pengguna
-        $session = \Config\Services::session();
-        $data['nama_lengkap'] = $session->get('nama_lengkap');
+        $data = [
+            'products' => $productModel->findAll(),
+            'nama_lengkap' => session()->get('nama_lengkap'),
+            'description' => 'KUBE Purun adalah pusat kerajinan anyaman purun berkualitas tinggi dari Kalimantan Selatan. Temukan tas, dompet, dan produk unik lainnya.'
+        ];
 
         return view('home_view', $data);
     }

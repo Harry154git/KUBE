@@ -1,0 +1,25 @@
+.quantity-stepper { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border: 1px solid #ced4da; 
+    border-radius: 50px; 
+    overflow: hidden; 
+    max-width: 120px; 
+}
+.quantity-stepper .btn { 
+    background-color: transparent; 
+    border: none; 
+    color: var(--purun-dark-green); 
+    font-weight: bold; 
+    box-shadow: none; 
+    padding: 0.5rem 0.8rem; 
+}
+.quantity-stepper .form-control { 
+    border: none; 
+    box-shadow: none; 
+    background-color: transparent; 
+    width: 40px; 
+    padding: 0; 
+    height: auto; 
+}

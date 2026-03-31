@@ -1,0 +1,71 @@
+/* (BARU) CSS untuk Footer */
+.main-footer {
+  width: 100%;
+  background-color: var(--color-dark);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px var(--padding-xl);
+  gap: var(--gap-lg);
+  color: #d4a048; /* peru */
+  font-family: var(--font-body);
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1240px;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-md);
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  min-width: 200px;
+}
+
+.footer-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.footer-subtitle,
+.footer-link {
+  font-size: 18px;
+  color: var(--color-white);
+  font-family: var(--font-lato);
+  font-weight: 400;
+  margin: 0;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: var(--color-primary);
+}
+
+.footer-divider {
+  align-self: stretch;
+  height: 1px;
+  background-color: var(--color-text);
+  width: 100%;
+  max-width: 1240px;
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copyright-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: var(--font-poppins);
+  color: var(--color-medium-gray);
+}

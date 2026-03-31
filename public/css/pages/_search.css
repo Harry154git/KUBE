@@ -1,0 +1,13 @@
+.page-header strong {
+    color: var(--purun-maroon);
+}
+.search-results-count {
+    color: #6c757d;
+    margin-top: -0.5rem;
+}
+.search-no-results {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 3rem;
+}

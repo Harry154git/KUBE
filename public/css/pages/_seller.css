@@ -1,0 +1,43 @@
+/* Sidebar Navigasi */
+.seller-sidebar .list-group-item {
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--purun-dark-green);
+    transition: all 0.2s ease-in-out;
+}
+.seller-sidebar .list-group-item i {
+    color: var(--purun-brown);
+}
+.seller-sidebar .list-group-item:hover {
+    background-color: #fdfaf4;
+    color: var(--purun-brown);
+}
+.seller-sidebar .list-group-item.active {
+    background-color: var(--purun-dark-green);
+    color: white;
+    box-shadow: 0 4px 10px rgba(45, 61, 34, 0.3);
+}
+.seller-sidebar .list-group-item.active i {
+    color: white;
+}
+
+/* Kartu Statistik di Dasbor */
+.stat-card {
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 1.5rem;
+}
+.stat-card .stat-icon {
+    font-size: 3rem;
+    opacity: 0.3;
+}
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+}
+.stat-card-orders { background-color: var(--purun-maroon); }
+.stat-card-products { background-color: var(--purun-dark-green); }
+.stat-card-revenue { background-color: var(--purun-brown); }

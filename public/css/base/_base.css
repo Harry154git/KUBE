@@ -1,0 +1,28 @@
+/* (BARU) Font import dan gaya dasar */
+@import url('https://fonts.googleapis.com/css2?family=Suez+One&family=Roboto:wght@400;600;700&family=Lato&family=Poppins:wght@400;500&display=swap');
+
+body {
+  margin: 0;
+  line-height: 1.6;
+  background-color: var(--color-white);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.page-wrapper {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1; /* Membuat main content mengisi ruang yang tersedia */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}

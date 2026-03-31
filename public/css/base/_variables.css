@@ -1,0 +1,43 @@
+/* (BARU) Menggabungkan variabel dari desain AI dan milik Anda */
+:root {
+  /* Palet Warna Utama */
+  --color-primary: #e09f3e; /* goldenrod-100 */
+  --color-primary-light: rgba(224, 159, 62, 0.2); /* goldenrod-200 */
+  --color-secondary: #540b0e; /* maroon */
+  --color-accent: #9e2a2b; /* Varian lebih cerah dari maroon */
+  --color-dark: #2d3d22; /* darkslategray-200 */
+  --color-text: #335c67; /* darkslategray-100 */
+  --color-text-light: #f4f1ea;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-light-gray: #e6e6e6; /* gainsboro */
+  --color-medium-gray: #bbb8b8; /* silver */
+  --color-border: #ced4da;
+  
+  /* Font Families */
+  --font-heading: 'Suez One', serif;
+  --font-brand: 'Lora', serif;
+  --font-body: 'Roboto', 'Poppins', sans-serif;
+  --font-lato: 'Lato', sans-serif;
+
+  /* Spacing & Gaps */
+  --gap-xs: 5px;
+  --gap-sm: 10px;
+  --gap-md: 20px;
+  --gap-lg: 30px;
+  --padding-xs: 5px;
+  --padding-sm: 10px;
+  --padding-md: 20px;
+  --padding-lg: 30px;
+  --padding-xl: 50px;
+
+  /* Border Radius */
+  --rounded-sm: 10px;
+  --rounded-md: 20px;
+  --rounded-lg: 30px;
+  --rounded-full: 70px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+}

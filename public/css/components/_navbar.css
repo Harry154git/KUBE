@@ -1,0 +1,137 @@
+/* (BARU) CSS untuk Navbar */
+.nav-bar {
+  width: 100%;
+  height: 60px;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--padding-xl);
+  box-sizing: border-box;
+  gap: var(--gap-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-shrink: 0;
+  color: var(--color-white);
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.brand-logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.brand-text-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.brand-text {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 30px;
+  font-weight: 400;
+  color: var(--color-white);
+}
+
+.search-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 700px;
+}
+
+.search-form {
+  width: 100%;
+  display: flex;
+  border-radius: var(--rounded-lg);
+  background-color: var(--color-primary-light);
+  border: 2px solid var(--color-white);
+  overflow: hidden;
+}
+
+.search-input {
+  flex-grow: 1;
+  border: none;
+  background-color: transparent;
+  padding: 8px var(--padding-md);
+  font-size: 16px;
+  color: var(--color-white);
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-button {
+  border: none;
+  background: transparent;
+  padding: 0 var(--padding-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+.icon-group {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+.icon-link {
+  line-height: 0; /* Menghindari spasi ekstra di bawah ikon */
+}
+
+.action-icon {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.user-name {
+    color: var(--color-white);
+    font-weight: 600;
+}
+
+.auth-button {
+  cursor: pointer;
+  border: none;
+  padding: 10px 25px;
+  background-color: var(--color-white);
+  border-radius: var(--rounded-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+  background-color: var(--color-light-gray);
+}
+
+.auth-button-text {
+  font-size: 16px;
+  font-family: var(--font-body);
+  color: var(--color-primary);
+  font-weight: 600;
+}

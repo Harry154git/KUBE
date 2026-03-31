@@ -31,7 +31,8 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 
 // --- PUBLIC ROUTES (Accessible without login) ---
-$routes->get('/', 'AuthController::login');
+$routes->get('/', 'HomeController::index');
+$routes->get('/home', 'HomeController::index');
 $routes->get('/login', 'AuthController::login');
 $routes->post('/login', 'AuthController::attemptLogin');
 $routes->get('/logout', 'AuthController::logout');
@@ -40,13 +41,12 @@ $routes->match(['get', 'post'], 'register', 'AuthController::register');
 // Route for product search
 $routes->get('/search', 'SearchController::search');
 
+// Product Routes
+$routes->get('product/(:num)', 'ProductController::detail/$1');
+
 
 // --- PROTECTED ROUTES (Must be logged in to access) ---
 $routes->group('', ['filter' => 'auth'], function($routes) {
-    $routes->get('/home', 'HomeController::index');
-    
-    // Product Routes
-    $routes->get('product/(:num)', 'ProductController::detail/$1');
 
     // Cart Routes
     $routes->get('cart', 'CartController::index');

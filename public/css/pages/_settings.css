@@ -1,0 +1,19 @@
+.settings-nav .nav-link {
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--purun-dark-green);
+    text-align: left;
+    padding: 0.8rem 1.2rem;
+    transition: all 0.2s ease-in-out;
+}
+.settings-nav .nav-link:hover {
+    background-color: #fdfaf4;
+    color: var(--purun-brown);
+}
+.settings-nav .nav-link.active {
+    background-color: var(--purun-dark-green);
+    color: white;
+    box-shadow: 0 4px 10px rgba(45, 61, 34, 0.3);
+}

@@ -18,11 +18,14 @@ class AuthController extends BaseController
         if (session()->get('isLoggedIn')) {
             return redirect()->to('/home');
         }
-        return view('login_view');
+        return redirect()->to('/home');
     }
 
     public function attemptLogin()
     {
+        // (BARU) Tangkap URL redirect dari form
+        $redirectUrl = $this->request->getPost('redirect_url') ?? '/home';
+
         $userModel = new UserModel();
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
@@ -48,16 +51,22 @@ class AuthController extends BaseController
                 }
             }
 
-            return redirect()->to('/home');
+            return redirect()->to($redirectUrl);
         }
 
         session()->setFlashdata('error', 'Email or Password wrong.');
-        return redirect()->to('/login');
+        return redirect()->to('/login')->withInput()->with('redirect_url', $redirectUrl);
     }
 
     public function register()
     {
+        // Jika pengguna sudah login, arahkan ke home.
+        if (session()->get('isLoggedIn')) {
+            return redirect()->to('/home');
+        }
+
         $data = [];
+        $redirectUrl = $this->request->getPost('redirect_url') ?? '/home';
 
         if ($this->request->getMethod() === 'POST') {
             $rules = [
@@ -76,14 +85,19 @@ class AuthController extends BaseController
                 ];
                 $model->save($newData);
 
-                session()->setFlashdata('success', 'Registration successful! Please login.');
-                return redirect()->to('/login');
+                $redirectUrl = $this->request->getPost('redirect_url') ?: '/home';
+                session()->setFlashdata('success_register', 'Registrasi berhasil! Silakan login.');
+                return redirect()->to($redirectUrl);
             } else {
-                $data['validation'] = $this->validator;
+                $redirectUrl = $this->request->getPost('redirect_url') ?: '/home';
+                return redirect()->to($redirectUrl)
+                                ->withInput()
+                                ->with('validation', $this->validator)
+                                ->with('redirect_url', $redirectUrl); 
             }
         }
 
-        return view('register_view', $data);
+        return redirect()->to('/home');
     }
 
     public function logout()

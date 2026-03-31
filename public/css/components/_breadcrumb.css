@@ -1,0 +1,15 @@
+.breadcrumb-purun {
+    background-color: transparent;
+    padding: 0.5rem 0;
+}
+.breadcrumb-purun .breadcrumb-item a {
+    color: var(--purun-brown);
+    text-decoration: none;
+    font-weight: 500;
+}
+.breadcrumb-purun .breadcrumb-item a:hover {
+    color: var(--purun-dark-green);
+}
+.breadcrumb-purun .breadcrumb-item.active {
+    color: #6c757d;
+}
